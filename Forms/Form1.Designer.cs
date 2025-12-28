@@ -23,6 +23,9 @@
             panel2 = new Panel();
             btnMinimize = new AntdUI.Button();
             btnClose = new AntdUI.Button();
+            pnlLogin = new Panel();
+            btnFacebook = new AntdUI.Button();
+            btnGoogle = new AntdUI.Button();
             pnlSignup = new Panel();
             btnSignupGoogle = new AntdUI.Button();
             btnSignupFB = new AntdUI.Button();
@@ -38,9 +41,6 @@
             btnRoleLandlord = new AntdUI.Button();
             lblLoginLink = new Label();
             lblSignupTitle = new Label();
-            pnlLogin = new Panel();
-            btnFacebook = new AntdUI.Button();
-            btnGoogle = new AntdUI.Button();
             labelOr = new Label();
             label6 = new Label();
             btnSignIn = new AntdUI.Button();
@@ -51,9 +51,9 @@
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel2.SuspendLayout();
+            pnlLogin.SuspendLayout();
             pnlSignup.SuspendLayout();
             panelRoles.SuspendLayout();
-            pnlLogin.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -115,6 +115,10 @@
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 3;
             pictureBox1.TabStop = false;
+            pictureBox1.Click += pictureBox1_Click;
+            pictureBox1.MouseDown += Form_MouseDown;
+            pictureBox1.MouseMove += Form_MouseMove;
+            pictureBox1.MouseUp += Form_MouseUp;
             // 
             // panel2
             // 
@@ -128,6 +132,9 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(550, 650);
             panel2.TabIndex = 0;
+            panel2.MouseDown += Form_MouseDown;
+            panel2.MouseMove += Form_MouseMove;
+            panel2.MouseUp += Form_MouseUp;
             // 
             // btnMinimize
             // 
@@ -148,6 +155,47 @@
             btnClose.Text = "✕";
             btnClose.Type = AntdUI.TTypeMini.Error;
             btnClose.Click += btnClose_Click;
+            // 
+            // pnlLogin
+            // 
+            pnlLogin.BackColor = Color.White;
+            pnlLogin.Controls.Add(btnFacebook);
+            pnlLogin.Controls.Add(btnGoogle);
+            pnlLogin.Controls.Add(labelOr);
+            pnlLogin.Controls.Add(label6);
+            pnlLogin.Controls.Add(btnSignIn);
+            pnlLogin.Controls.Add(checkbox1);
+            pnlLogin.Controls.Add(txtLoginPass);
+            pnlLogin.Controls.Add(txtLoginEmail);
+            pnlLogin.Controls.Add(label4);
+            pnlLogin.Location = new Point(65, 40);
+            pnlLogin.Name = "pnlLogin";
+            pnlLogin.Size = new Size(420, 520);
+            pnlLogin.TabIndex = 3;
+            // 
+            // btnFacebook
+            // 
+            btnFacebook.Icon = (Image)resources.GetObject("btnFacebook.Icon");
+            btnFacebook.Location = new Point(215, 70);
+            btnFacebook.Name = "btnFacebook";
+            btnFacebook.Size = new Size(205, 45);
+            btnFacebook.TabIndex = 0;
+            btnFacebook.Text = "Facebook";
+            btnFacebook.Type = AntdUI.TTypeMini.Primary;
+            btnFacebook.Click += btnSignupFB_Click;
+            // 
+            // btnGoogle
+            // 
+            btnGoogle.BackColor = Color.DarkCyan;
+            btnGoogle.BackgroundImageLayout = AntdUI.TFit.Contain;
+            btnGoogle.Icon = (Image)resources.GetObject("btnGoogle.Icon");
+            btnGoogle.Location = new Point(0, 70);
+            btnGoogle.Name = "btnGoogle";
+            btnGoogle.Size = new Size(205, 45);
+            btnGoogle.TabIndex = 1;
+            btnGoogle.Text = "Google";
+            btnGoogle.Type = AntdUI.TTypeMini.Primary;
+            btnGoogle.Click += btnGoogle_Click;
             // 
             // pnlSignup
             // 
@@ -180,6 +228,7 @@
             btnSignupGoogle.TabIndex = 0;
             btnSignupGoogle.Text = "Google";
             btnSignupGoogle.Type = AntdUI.TTypeMini.Primary;
+            btnSignupGoogle.Click += btnGoogle_Click;
             // 
             // btnSignupFB
             // 
@@ -314,45 +363,6 @@
             lblSignupTitle.TabIndex = 11;
             lblSignupTitle.Text = "Create Account";
             // 
-            // pnlLogin
-            // 
-            pnlLogin.BackColor = Color.White;
-            pnlLogin.Controls.Add(btnFacebook);
-            pnlLogin.Controls.Add(btnGoogle);
-            pnlLogin.Controls.Add(labelOr);
-            pnlLogin.Controls.Add(label6);
-            pnlLogin.Controls.Add(btnSignIn);
-            pnlLogin.Controls.Add(checkbox1);
-            pnlLogin.Controls.Add(txtLoginPass);
-            pnlLogin.Controls.Add(txtLoginEmail);
-            pnlLogin.Controls.Add(label4);
-            pnlLogin.Location = new Point(65, 40);
-            pnlLogin.Name = "pnlLogin";
-            pnlLogin.Size = new Size(420, 520);
-            pnlLogin.TabIndex = 3;
-            // 
-            // btnFacebook
-            // 
-            btnFacebook.Icon = (Image)resources.GetObject("btnFacebook.Icon");
-            btnFacebook.Location = new Point(215, 70);
-            btnFacebook.Name = "btnFacebook";
-            btnFacebook.Size = new Size(205, 45);
-            btnFacebook.TabIndex = 0;
-            btnFacebook.Text = "Facebook";
-            btnFacebook.Type = AntdUI.TTypeMini.Primary;
-            // 
-            // btnGoogle
-            // 
-            btnGoogle.BackColor = Color.DarkCyan;
-            btnGoogle.BackgroundImageLayout = AntdUI.TFit.Contain;
-            btnGoogle.Icon = (Image)resources.GetObject("btnGoogle.Icon");
-            btnGoogle.Location = new Point(0, 70);
-            btnGoogle.Name = "btnGoogle";
-            btnGoogle.Size = new Size(205, 45);
-            btnGoogle.TabIndex = 1;
-            btnGoogle.Text = "Google";
-            btnGoogle.Type = AntdUI.TTypeMini.Primary;
-            // 
             // labelOr
             // 
             labelOr.AutoSize = true;
@@ -439,11 +449,11 @@
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panel2.ResumeLayout(false);
+            pnlLogin.ResumeLayout(false);
+            pnlLogin.PerformLayout();
             pnlSignup.ResumeLayout(false);
             pnlSignup.PerformLayout();
             panelRoles.ResumeLayout(false);
-            pnlLogin.ResumeLayout(false);
-            pnlLogin.PerformLayout();
             ResumeLayout(false);
         }
 
