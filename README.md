@@ -148,10 +148,3 @@ This project is licensed under the **MIT License** — see the `LICENSE` file.
 ### 👨‍💻 Developed by
 
 **Mohammad Shihab Hossain**
-
-* Optimize this README for **AIUB submission**
-* Add **badges automatically**
-* Write a **short project description for faculty**
-* Make a **GitHub profile showcase version**
-
-Just tell me 👍
