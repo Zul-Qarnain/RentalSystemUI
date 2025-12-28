@@ -15,8 +15,8 @@ This project features a clean, flat architecture with role-based authentication 
 <!-- Upload screenshots to your repo's 'Assets' folder and link them here -->
 
 <p align="center">
-  <img src="Assets/login_preview.png" alt="Login Screen" width="45%">
-  <img src="Assets/signup_preview.png" alt="Signup Screen" width="45%">
+  <img src="Assets/signin.png" alt="Login Screen" width="45%">
+  <img src="Assets/signup.png" alt="Signup Screen" width="45%">
 </p>
 
 ---
