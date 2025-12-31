@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-using RentalSystemUI.Forms; // <--- This line tells it where Form1 is!
+using RentalSystemUI.Forms;
 
 namespace RentalSystemUI
 {
@@ -9,9 +9,11 @@ namespace RentalSystemUI
         [STAThread]
         static void Main()
         {
+            // LOAD SECRETS FIRST
+            DotNetEnv.Env.Load();
+
             ApplicationConfiguration.Initialize();
-            // Now it can find Form1 because we added the 'using' line above
-            Application.Run(new Form1());
+            Application.Run(new RentAllSearch());
         }
     }
 }
