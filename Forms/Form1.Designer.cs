@@ -15,487 +15,463 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            panel1 = new Panel();
-            lblSub = new Label();
-            lblBlue = new Label();
-            lblMain = new Label();
-            pictureBox1 = new PictureBox();
-            panel2 = new Panel();
-            btnMinimize = new AntdUI.Button();
-            btnClose = new AntdUI.Button();
-            pnlLogin = new Panel();
-            btnFacebook = new AntdUI.Button();
-            btnGoogle = new AntdUI.Button();
-            pnlSignup = new Panel();
-            btnSignupGoogle = new AntdUI.Button();
-            btnSignupFB = new AntdUI.Button();
-            lblSignupOr = new Label();
-            btnSignup = new AntdUI.Button();
-            chkAgree = new AntdUI.Checkbox();
-            txtSignupPass = new AntdUI.Input();
-            txtSignupEmail = new AntdUI.Input();
-            txtSignupPhone = new AntdUI.Input();
-            txtSignupName = new AntdUI.Input();
-            panelRoles = new Panel();
-            btnRoleTenant = new AntdUI.Button();
-            btnRoleLandlord = new AntdUI.Button();
-            lblLoginLink = new Label();
-            lblSignupTitle = new Label();
-            labelOr = new Label();
-            label6 = new Label();
-            btnSignIn = new AntdUI.Button();
-            checkbox1 = new AntdUI.Checkbox();
-            txtLoginPass = new AntdUI.Input();
-            txtLoginEmail = new AntdUI.Input();
-            label4 = new Label();
-            panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-            panel2.SuspendLayout();
-            pnlLogin.SuspendLayout();
-            pnlSignup.SuspendLayout();
-            panelRoles.SuspendLayout();
-            SuspendLayout();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.lblSub = new System.Windows.Forms.Label();
+            this.lblBlue = new System.Windows.Forms.Label();
+            this.lblMain = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.btnMinimize = new AntdUI.Button();
+            this.btnClose = new AntdUI.Button();
+            this.pnlSignup = new System.Windows.Forms.Panel();
+            this.btnSignupGoogle = new AntdUI.Button();
+            this.btnSignupFB = new AntdUI.Button();
+            this.lblSignupOr = new System.Windows.Forms.Label();
+            this.btnSignup = new AntdUI.Button();
+            this.chkAgree = new AntdUI.Checkbox();
+            this.txtSignupPass = new AntdUI.Input();
+            this.txtSignupEmail = new AntdUI.Input();
+            this.txtSignupPhone = new AntdUI.Input();
+            this.txtSignupName = new AntdUI.Input();
+            this.panelRoles = new System.Windows.Forms.Panel();
+            this.btnRoleTenant = new AntdUI.Button();
+            this.btnRoleLandlord = new AntdUI.Button();
+            this.lblLoginLink = new System.Windows.Forms.Label();
+            this.lblSignupTitle = new System.Windows.Forms.Label();
+            this.pnlLogin = new System.Windows.Forms.Panel();
+            this.lblForgot = new System.Windows.Forms.Label();
+            this.btnFacebook = new AntdUI.Button();
+            this.btnGoogle = new AntdUI.Button();
+            this.labelOr = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.btnSignIn = new AntdUI.Button();
+            this.checkbox1 = new AntdUI.Checkbox();
+            this.txtLoginPass = new AntdUI.Input();
+            this.txtLoginEmail = new AntdUI.Input();
+            this.label4 = new System.Windows.Forms.Label();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panel2.SuspendLayout();
+            this.pnlSignup.SuspendLayout();
+            this.panelRoles.SuspendLayout();
+            this.pnlLogin.SuspendLayout();
+            this.SuspendLayout();
             // 
             // panel1
             // 
-            panel1.BackColor = Color.FromArgb(17, 24, 39);
-            panel1.Controls.Add(lblSub);
-            panel1.Controls.Add(lblBlue);
-            panel1.Controls.Add(lblMain);
-            panel1.Controls.Add(pictureBox1);
-            panel1.Dock = DockStyle.Left;
-            panel1.Location = new Point(0, 0);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(450, 650);
-            panel1.TabIndex = 0;
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(17, 24, 39);
+            this.panel1.Controls.Add(this.lblSub);
+            this.panel1.Controls.Add(this.lblBlue);
+            this.panel1.Controls.Add(this.lblMain);
+            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(450, 650);
+            this.panel1.TabIndex = 0;
             // 
             // lblSub
             // 
-            lblSub.AutoSize = true;
-            lblSub.BackColor = Color.Transparent;
-            lblSub.Font = new Font("Segoe UI", 10F);
-            lblSub.ForeColor = Color.LightGray;
-            lblSub.Location = new Point(0, 354);
-            lblSub.Name = "lblSub";
-            lblSub.Size = new Size(330, 56);
-            lblSub.TabIndex = 0;
-            lblSub.Text = "The all-in-one solution for landlords,\ntenants, and property managers.";
+            this.lblSub.AutoSize = true;
+            this.lblSub.BackColor = System.Drawing.Color.Transparent;
+            this.lblSub.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblSub.ForeColor = System.Drawing.Color.LightGray;
+            this.lblSub.Location = new System.Drawing.Point(36, 330);
+            this.lblSub.Name = "lblSub";
+            this.lblSub.Size = new System.Drawing.Size(330, 56);
+            this.lblSub.TabIndex = 0;
+            this.lblSub.Text = "The all-in-one solution for landlords,\ntenants, and property managers.";
             // 
             // lblBlue
             // 
-            lblBlue.AutoSize = true;
-            lblBlue.BackColor = Color.Transparent;
-            lblBlue.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            lblBlue.ForeColor = Color.FromArgb(59, 130, 246);
-            lblBlue.Location = new Point(3, 251);
-            lblBlue.Name = "lblBlue";
-            lblBlue.Size = new Size(212, 54);
-            lblBlue.TabIndex = 1;
-            lblBlue.Text = "with ease.";
+            this.lblBlue.AutoSize = true;
+            this.lblBlue.BackColor = System.Drawing.Color.Transparent;
+            this.lblBlue.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblBlue.ForeColor = System.Drawing.Color.FromArgb(59, 130, 246);
+            this.lblBlue.Location = new System.Drawing.Point(36, 265);
+            this.lblBlue.Name = "lblBlue";
+            this.lblBlue.Size = new System.Drawing.Size(212, 54);
+            this.lblBlue.TabIndex = 1;
+            this.lblBlue.Text = "with ease.";
             // 
             // lblMain
             // 
-            lblMain.AutoSize = true;
-            lblMain.BackColor = Color.Transparent;
-            lblMain.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            lblMain.ForeColor = Color.White;
-            lblMain.Location = new Point(0, 180);
-            lblMain.Name = "lblMain";
-            lblMain.Size = new Size(383, 54);
-            lblMain.TabIndex = 2;
-            lblMain.Text = "Manage properties";
+            this.lblMain.AutoSize = true;
+            this.lblMain.BackColor = System.Drawing.Color.Transparent;
+            this.lblMain.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.lblMain.ForeColor = System.Drawing.Color.White;
+            this.lblMain.Location = new System.Drawing.Point(36, 220);
+            this.lblMain.Name = "lblMain";
+            this.lblMain.Size = new System.Drawing.Size(383, 54);
+            this.lblMain.TabIndex = 2;
+            this.lblMain.Text = "Manage properties";
             // 
             // pictureBox1
             // 
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(0, 0);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(450, 650);
-            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
-            pictureBox1.MouseDown += Form_MouseDown;
-            pictureBox1.MouseMove += Form_MouseMove;
-            pictureBox1.MouseUp += Form_MouseUp;
+            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(450, 650);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 3;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // panel2
             // 
-            panel2.BackColor = Color.White;
-            panel2.Controls.Add(btnMinimize);
-            panel2.Controls.Add(btnClose);
-            panel2.Controls.Add(pnlSignup);
-            panel2.Controls.Add(pnlLogin);
-            panel2.Dock = DockStyle.Fill;
-            panel2.Location = new Point(450, 0);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(550, 650);
-            panel2.TabIndex = 0;
-            panel2.MouseDown += Form_MouseDown;
-            panel2.MouseMove += Form_MouseMove;
-            panel2.MouseUp += Form_MouseUp;
+            this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Controls.Add(this.btnMinimize);
+            this.panel2.Controls.Add(this.btnClose);
+            this.panel2.Controls.Add(this.pnlSignup);
+            this.panel2.Controls.Add(this.pnlLogin);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(450, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(550, 650);
+            this.panel2.TabIndex = 0;
+            this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form_MouseDown);
+            this.panel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form_MouseMove);
+            this.panel2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form_MouseUp);
             // 
             // btnMinimize
             // 
-            btnMinimize.Location = new Point(450, 0);
-            btnMinimize.Name = "btnMinimize";
-            btnMinimize.Size = new Size(45, 37);
-            btnMinimize.TabIndex = 0;
-            btnMinimize.Text = "--";
-            btnMinimize.Type = AntdUI.TTypeMini.Success;
-            btnMinimize.Click += btnMinimize_Click;
+            this.btnMinimize.Location = new System.Drawing.Point(450, 0);
+            this.btnMinimize.Name = "btnMinimize";
+            this.btnMinimize.Size = new System.Drawing.Size(45, 37);
+            this.btnMinimize.TabIndex = 0;
+            this.btnMinimize.Text = "--";
+            this.btnMinimize.Type = AntdUI.TTypeMini.Success;
+            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
             // 
             // btnClose
             // 
-            btnClose.Location = new Point(500, 0);
-            btnClose.Name = "btnClose";
-            btnClose.Size = new Size(45, 37);
-            btnClose.TabIndex = 1;
-            btnClose.Text = "✕";
-            btnClose.Type = AntdUI.TTypeMini.Error;
-            btnClose.Click += btnClose_Click;
-            // 
-            // pnlLogin
-            // 
-            pnlLogin.BackColor = Color.White;
-            pnlLogin.Controls.Add(btnFacebook);
-            pnlLogin.Controls.Add(btnGoogle);
-            pnlLogin.Controls.Add(labelOr);
-            pnlLogin.Controls.Add(label6);
-            pnlLogin.Controls.Add(btnSignIn);
-            pnlLogin.Controls.Add(checkbox1);
-            pnlLogin.Controls.Add(txtLoginPass);
-            pnlLogin.Controls.Add(txtLoginEmail);
-            pnlLogin.Controls.Add(label4);
-            pnlLogin.Location = new Point(65, 40);
-            pnlLogin.Name = "pnlLogin";
-            pnlLogin.Size = new Size(420, 520);
-            pnlLogin.TabIndex = 3;
-            // 
-            // btnFacebook
-            // 
-            btnFacebook.Icon = (Image)resources.GetObject("btnFacebook.Icon");
-            btnFacebook.Location = new Point(215, 70);
-            btnFacebook.Name = "btnFacebook";
-            btnFacebook.Size = new Size(205, 45);
-            btnFacebook.TabIndex = 0;
-            btnFacebook.Text = "Facebook";
-            btnFacebook.Type = AntdUI.TTypeMini.Primary;
-            btnFacebook.Click += btnSignupFB_Click;
-            // 
-            // btnGoogle
-            // 
-            btnGoogle.BackColor = Color.DarkCyan;
-            btnGoogle.BackgroundImageLayout = AntdUI.TFit.Contain;
-            btnGoogle.Icon = (Image)resources.GetObject("btnGoogle.Icon");
-            btnGoogle.Location = new Point(0, 70);
-            btnGoogle.Name = "btnGoogle";
-            btnGoogle.Size = new Size(205, 45);
-            btnGoogle.TabIndex = 1;
-            btnGoogle.Text = "Google";
-            btnGoogle.Type = AntdUI.TTypeMini.Primary;
-            btnGoogle.Click += btnGoogle_Click;
+            this.btnClose.Location = new System.Drawing.Point(500, 0);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(45, 37);
+            this.btnClose.TabIndex = 1;
+            this.btnClose.Text = "✕";
+            this.btnClose.Type = AntdUI.TTypeMini.Error;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // pnlSignup
             // 
-            pnlSignup.BackColor = Color.White;
-            pnlSignup.Controls.Add(btnSignupGoogle);
-            pnlSignup.Controls.Add(btnSignupFB);
-            pnlSignup.Controls.Add(lblSignupOr);
-            pnlSignup.Controls.Add(btnSignup);
-            pnlSignup.Controls.Add(chkAgree);
-            pnlSignup.Controls.Add(txtSignupPass);
-            pnlSignup.Controls.Add(txtSignupEmail);
-            pnlSignup.Controls.Add(txtSignupPhone);
-            pnlSignup.Controls.Add(txtSignupName);
-            pnlSignup.Controls.Add(panelRoles);
-            pnlSignup.Controls.Add(lblLoginLink);
-            pnlSignup.Controls.Add(lblSignupTitle);
-            pnlSignup.Location = new Point(65, 40);
-            pnlSignup.Name = "pnlSignup";
-            pnlSignup.Size = new Size(420, 580);
-            pnlSignup.TabIndex = 2;
-            pnlSignup.Visible = false;
+            this.pnlSignup.BackColor = System.Drawing.Color.White;
+            this.pnlSignup.Controls.Add(this.btnSignupGoogle);
+            this.pnlSignup.Controls.Add(this.btnSignupFB);
+            this.pnlSignup.Controls.Add(this.lblSignupOr);
+            this.pnlSignup.Controls.Add(this.btnSignup);
+            this.pnlSignup.Controls.Add(this.chkAgree);
+            this.pnlSignup.Controls.Add(this.txtSignupPass);
+            this.pnlSignup.Controls.Add(this.txtSignupEmail);
+            this.pnlSignup.Controls.Add(this.txtSignupPhone);
+            this.pnlSignup.Controls.Add(this.txtSignupName);
+            this.pnlSignup.Controls.Add(this.panelRoles);
+            this.pnlSignup.Controls.Add(this.lblLoginLink);
+            this.pnlSignup.Controls.Add(this.lblSignupTitle);
+            this.pnlSignup.Location = new System.Drawing.Point(65, 40);
+            this.pnlSignup.Name = "pnlSignup";
+            this.pnlSignup.Size = new System.Drawing.Size(420, 580);
+            this.pnlSignup.TabIndex = 2;
+            this.pnlSignup.Visible = false;
             // 
             // btnSignupGoogle
             // 
-            btnSignupGoogle.BackColor = Color.DarkCyan;
-            btnSignupGoogle.Icon = (Image)resources.GetObject("btnSignupGoogle.Icon");
-            btnSignupGoogle.Location = new Point(26, 470);
-            btnSignupGoogle.Name = "btnSignupGoogle";
-            btnSignupGoogle.Size = new Size(171, 40);
-            btnSignupGoogle.TabIndex = 0;
-            btnSignupGoogle.Text = "Google";
-            btnSignupGoogle.Type = AntdUI.TTypeMini.Primary;
-            btnSignupGoogle.Click += btnGoogle_Click;
+            this.btnSignupGoogle.BackColor = System.Drawing.Color.DarkCyan;
+            this.btnSignupGoogle.Location = new System.Drawing.Point(0, 470);
+            this.btnSignupGoogle.Name = "btnSignupGoogle";
+            this.btnSignupGoogle.Size = new System.Drawing.Size(205, 40);
+            this.btnSignupGoogle.TabIndex = 0;
+            this.btnSignupGoogle.Text = "Google";
+            this.btnSignupGoogle.Type = AntdUI.TTypeMini.Default;
+            this.btnSignupGoogle.Click += new System.EventHandler(this.btnGoogle_Click);
             // 
             // btnSignupFB
             // 
-            btnSignupFB.Icon = (Image)resources.GetObject("btnSignupFB.Icon");
-            btnSignupFB.Location = new Point(200, 468);
-            btnSignupFB.Name = "btnSignupFB";
-            btnSignupFB.Size = new Size(186, 40);
-            btnSignupFB.TabIndex = 1;
-            btnSignupFB.Text = "Facebook";
-            btnSignupFB.Type = AntdUI.TTypeMini.Primary;
-            btnSignupFB.Click += btnSignupFB_Click;
+            this.btnSignupFB.Location = new System.Drawing.Point(215, 470);
+            this.btnSignupFB.Name = "btnSignupFB";
+            this.btnSignupFB.Size = new System.Drawing.Size(205, 40);
+            this.btnSignupFB.TabIndex = 1;
+            this.btnSignupFB.Text = "Facebook";
+            this.btnSignupFB.Type = AntdUI.TTypeMini.Default;
+            this.btnSignupFB.Click += new System.EventHandler(this.btnSignupFB_Click);
             // 
             // lblSignupOr
             // 
-            lblSignupOr.AutoSize = true;
-            lblSignupOr.ForeColor = Color.Gray;
-            lblSignupOr.Location = new Point(155, 440);
-            lblSignupOr.Name = "lblSignupOr";
-            lblSignupOr.Size = new Size(143, 25);
-            lblSignupOr.TabIndex = 2;
-            lblSignupOr.Text = "Or continue with";
+            this.lblSignupOr.AutoSize = true;
+            this.lblSignupOr.ForeColor = System.Drawing.Color.Gray;
+            this.lblSignupOr.Location = new System.Drawing.Point(155, 440);
+            this.lblSignupOr.Name = "lblSignupOr";
+            this.lblSignupOr.Size = new System.Drawing.Size(143, 25);
+            this.lblSignupOr.TabIndex = 2;
+            this.lblSignupOr.Text = "Or continue with";
             // 
             // btnSignup
             // 
-            btnSignup.Location = new Point(0, 380);
-            btnSignup.Name = "btnSignup";
-            btnSignup.Radius = 8;
-            btnSignup.Size = new Size(420, 45);
-            btnSignup.TabIndex = 3;
-            btnSignup.Text = "Create Account";
-            btnSignup.Type = AntdUI.TTypeMini.Primary;
-            btnSignup.Click += BtnSignup_Click;
+            this.btnSignup.Location = new System.Drawing.Point(0, 380);
+            this.btnSignup.Name = "btnSignup";
+            this.btnSignup.Radius = 8;
+            this.btnSignup.Size = new System.Drawing.Size(420, 45);
+            this.btnSignup.TabIndex = 3;
+            this.btnSignup.Text = "Create Account";
+            this.btnSignup.Type = AntdUI.TTypeMini.Primary;
+            this.btnSignup.Click += new System.EventHandler(this.BtnSignup_Click);
             // 
             // chkAgree
             // 
-            chkAgree.Location = new Point(5, 340);
-            chkAgree.Name = "chkAgree";
-            chkAgree.Size = new Size(400, 30);
-            chkAgree.TabIndex = 4;
-            chkAgree.Text = "I agree to Terms of Service";
+            this.chkAgree.Location = new System.Drawing.Point(5, 340);
+            this.chkAgree.Name = "chkAgree";
+            this.chkAgree.Size = new System.Drawing.Size(400, 30);
+            this.chkAgree.TabIndex = 4;
+            this.chkAgree.Text = "I agree to Terms of Service";
             // 
             // txtSignupPass
             // 
-            txtSignupPass.Location = new Point(0, 290);
-            txtSignupPass.Name = "txtSignupPass";
-            txtSignupPass.PlaceholderText = "Password";
-            txtSignupPass.Radius = 8;
-            txtSignupPass.Size = new Size(420, 40);
-            txtSignupPass.Suffix = (Image)resources.GetObject("txtSignupPass.Suffix");
-            txtSignupPass.TabIndex = 5;
-            txtSignupPass.UseSystemPasswordChar = true;
+            this.txtSignupPass.Location = new System.Drawing.Point(0, 290);
+            this.txtSignupPass.Name = "txtSignupPass";
+            this.txtSignupPass.PlaceholderText = "Password";
+            this.txtSignupPass.Radius = 8;
+            this.txtSignupPass.Size = new System.Drawing.Size(420, 40);
+            this.txtSignupPass.TabIndex = 5;
+            this.txtSignupPass.UseSystemPasswordChar = true;
             // 
             // txtSignupEmail
             // 
-            txtSignupEmail.Location = new Point(0, 240);
-            txtSignupEmail.Name = "txtSignupEmail";
-            txtSignupEmail.PlaceholderText = "Email Address";
-            txtSignupEmail.Radius = 8;
-            txtSignupEmail.Size = new Size(420, 40);
-            txtSignupEmail.TabIndex = 6;
+            this.txtSignupEmail.Location = new System.Drawing.Point(0, 240);
+            this.txtSignupEmail.Name = "txtSignupEmail";
+            this.txtSignupEmail.PlaceholderText = "Email Address";
+            this.txtSignupEmail.Radius = 8;
+            this.txtSignupEmail.Size = new System.Drawing.Size(420, 40);
+            this.txtSignupEmail.TabIndex = 6;
             // 
             // txtSignupPhone
             // 
-            txtSignupPhone.Location = new Point(0, 190);
-            txtSignupPhone.Name = "txtSignupPhone";
-            txtSignupPhone.PlaceholderText = "Phone Number";
-            txtSignupPhone.Radius = 8;
-            txtSignupPhone.Size = new Size(420, 40);
-            txtSignupPhone.TabIndex = 7;
+            this.txtSignupPhone.Location = new System.Drawing.Point(0, 190);
+            this.txtSignupPhone.Name = "txtSignupPhone";
+            this.txtSignupPhone.PlaceholderText = "Phone Number";
+            this.txtSignupPhone.Radius = 8;
+            this.txtSignupPhone.Size = new System.Drawing.Size(420, 40);
+            this.txtSignupPhone.TabIndex = 7;
             // 
             // txtSignupName
             // 
-            txtSignupName.Location = new Point(0, 140);
-            txtSignupName.Name = "txtSignupName";
-            txtSignupName.PlaceholderText = "Full Name";
-            txtSignupName.Radius = 8;
-            txtSignupName.Size = new Size(420, 40);
-            txtSignupName.TabIndex = 8;
+            this.txtSignupName.Location = new System.Drawing.Point(0, 140);
+            this.txtSignupName.Name = "txtSignupName";
+            this.txtSignupName.PlaceholderText = "Full Name";
+            this.txtSignupName.Radius = 8;
+            this.txtSignupName.Size = new System.Drawing.Size(420, 40);
+            this.txtSignupName.TabIndex = 8;
             // 
             // panelRoles
             // 
-            panelRoles.BackColor = Color.FromArgb(245, 245, 245);
-            panelRoles.Controls.Add(btnRoleTenant);
-            panelRoles.Controls.Add(btnRoleLandlord);
-            panelRoles.Location = new Point(0, 80);
-            panelRoles.Name = "panelRoles";
-            panelRoles.Size = new Size(420, 45);
-            panelRoles.TabIndex = 9;
+            this.panelRoles.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
+            this.panelRoles.Controls.Add(this.btnRoleTenant);
+            this.panelRoles.Controls.Add(this.btnRoleLandlord);
+            this.panelRoles.Location = new System.Drawing.Point(0, 80);
+            this.panelRoles.Name = "panelRoles";
+            this.panelRoles.Size = new System.Drawing.Size(420, 45);
+            this.panelRoles.TabIndex = 9;
             // 
             // btnRoleTenant
             // 
-            btnRoleTenant.Dock = DockStyle.Left;
-            btnRoleTenant.Location = new Point(0, 0);
-            btnRoleTenant.Name = "btnRoleTenant";
-            btnRoleTenant.Size = new Size(210, 45);
-            btnRoleTenant.TabIndex = 0;
-            btnRoleTenant.Text = "Tenant";
-            btnRoleTenant.Type = AntdUI.TTypeMini.Primary;
-            btnRoleTenant.Click += RoleButton_Click;
+            this.btnRoleTenant.Dock = System.Windows.Forms.DockStyle.Left;
+            this.btnRoleTenant.Location = new System.Drawing.Point(0, 0);
+            this.btnRoleTenant.Name = "btnRoleTenant";
+            this.btnRoleTenant.Size = new System.Drawing.Size(210, 45);
+            this.btnRoleTenant.TabIndex = 0;
+            this.btnRoleTenant.Text = "Tenant";
+            this.btnRoleTenant.Type = AntdUI.TTypeMini.Primary;
+            this.btnRoleTenant.Click += new System.EventHandler(this.RoleButton_Click);
             // 
             // btnRoleLandlord
             // 
-            btnRoleLandlord.Dock = DockStyle.Right;
-            btnRoleLandlord.ForeColor = Color.Gray;
-            btnRoleLandlord.Location = new Point(210, 0);
-            btnRoleLandlord.Name = "btnRoleLandlord";
-            btnRoleLandlord.Size = new Size(210, 45);
-            btnRoleLandlord.TabIndex = 1;
-            btnRoleLandlord.Text = "Landlord";
-            btnRoleLandlord.Click += RoleButton_Click;
+            this.btnRoleLandlord.Dock = System.Windows.Forms.DockStyle.Right;
+            this.btnRoleLandlord.ForeColor = System.Drawing.Color.Gray;
+            this.btnRoleLandlord.Location = new System.Drawing.Point(210, 0);
+            this.btnRoleLandlord.Name = "btnRoleLandlord";
+            this.btnRoleLandlord.Size = new System.Drawing.Size(210, 45);
+            this.btnRoleLandlord.TabIndex = 1;
+            this.btnRoleLandlord.Text = "Landlord";
+            this.btnRoleLandlord.Click += new System.EventHandler(this.RoleButton_Click);
             // 
             // lblLoginLink
             // 
-            lblLoginLink.AutoSize = true;
-            lblLoginLink.Cursor = Cursors.Hand;
-            lblLoginLink.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblLoginLink.ForeColor = Color.FromArgb(37, 99, 235);
-            lblLoginLink.Location = new Point(172, 5);
-            lblLoginLink.Name = "lblLoginLink";
-            lblLoginLink.Size = new Size(233, 25);
-            lblLoginLink.TabIndex = 10;
-            lblLoginLink.Text = "Already a member? Log in";
-            lblLoginLink.Click += SwitchToLogin;
+            this.lblLoginLink.AutoSize = true;
+            this.lblLoginLink.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblLoginLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblLoginLink.ForeColor = System.Drawing.Color.FromArgb(37, 99, 235);
+            this.lblLoginLink.Location = new System.Drawing.Point(172, 5);
+            this.lblLoginLink.Name = "lblLoginLink";
+            this.lblLoginLink.Size = new System.Drawing.Size(233, 25);
+            this.lblLoginLink.TabIndex = 10;
+            this.lblLoginLink.Text = "Already a member? Log in";
+            this.lblLoginLink.Click += new System.EventHandler(this.SwitchToLogin);
             // 
             // lblSignupTitle
             // 
-            lblSignupTitle.AutoSize = true;
-            lblSignupTitle.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
-            lblSignupTitle.Location = new Point(0, 19);
-            lblSignupTitle.Name = "lblSignupTitle";
-            lblSignupTitle.Size = new Size(276, 48);
-            lblSignupTitle.TabIndex = 11;
-            lblSignupTitle.Text = "Create Account";
+            this.lblSignupTitle.AutoSize = true;
+            this.lblSignupTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblSignupTitle.Location = new System.Drawing.Point(0, 19);
+            this.lblSignupTitle.Name = "lblSignupTitle";
+            this.lblSignupTitle.Size = new System.Drawing.Size(276, 48);
+            this.lblSignupTitle.TabIndex = 11;
+            this.lblSignupTitle.Text = "Create Account";
+            // 
+            // pnlLogin
+            // 
+            this.pnlLogin.BackColor = System.Drawing.Color.White;
+            this.pnlLogin.Controls.Add(this.lblForgot);
+            this.pnlLogin.Controls.Add(this.btnFacebook);
+            this.pnlLogin.Controls.Add(this.btnGoogle);
+            this.pnlLogin.Controls.Add(this.labelOr);
+            this.pnlLogin.Controls.Add(this.label6);
+            this.pnlLogin.Controls.Add(this.btnSignIn);
+            this.pnlLogin.Controls.Add(this.checkbox1);
+            this.pnlLogin.Controls.Add(this.txtLoginPass);
+            this.pnlLogin.Controls.Add(this.txtLoginEmail);
+            this.pnlLogin.Controls.Add(this.label4);
+            this.pnlLogin.Location = new System.Drawing.Point(65, 40);
+            this.pnlLogin.Name = "pnlLogin";
+            this.pnlLogin.Size = new System.Drawing.Size(420, 520);
+            this.pnlLogin.TabIndex = 3;
+            // 
+            // lblForgot
+            // 
+            this.lblForgot.AutoSize = true;
+            this.lblForgot.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.lblForgot.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblForgot.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
+            this.lblForgot.Location = new System.Drawing.Point(245, 282);
+            this.lblForgot.Name = "lblForgot";
+            this.lblForgot.Size = new System.Drawing.Size(164, 25);
+            this.lblForgot.TabIndex = 9;
+            this.lblForgot.Text = "Forgot Password?";
+            this.lblForgot.Click += new System.EventHandler(this.lblForgot_Click);
+            // 
+            // btnFacebook
+            // 
+            this.btnFacebook.Location = new System.Drawing.Point(215, 70);
+            this.btnFacebook.Name = "btnFacebook";
+            this.btnFacebook.Size = new System.Drawing.Size(205, 45);
+            this.btnFacebook.TabIndex = 0;
+            this.btnFacebook.Text = "Facebook";
+            this.btnFacebook.Type = AntdUI.TTypeMini.Default;
+            this.btnFacebook.Click += new System.EventHandler(this.btnSignupFB_Click);
+            // 
+            // btnGoogle
+            // 
+            this.btnGoogle.BackColor = System.Drawing.Color.DarkCyan;
+            this.btnGoogle.Location = new System.Drawing.Point(0, 70);
+            this.btnGoogle.Name = "btnGoogle";
+            this.btnGoogle.Size = new System.Drawing.Size(205, 45);
+            this.btnGoogle.TabIndex = 1;
+            this.btnGoogle.Text = "Google";
+            this.btnGoogle.Type = AntdUI.TTypeMini.Default;
+            this.btnGoogle.Click += new System.EventHandler(this.btnGoogle_Click);
             // 
             // labelOr
             // 
-            labelOr.AutoSize = true;
-            labelOr.ForeColor = Color.Gray;
-            labelOr.Location = new Point(155, 130);
-            labelOr.Name = "labelOr";
-            labelOr.Size = new Size(143, 25);
-            labelOr.TabIndex = 2;
-            labelOr.Text = "Or continue with";
+            this.labelOr.AutoSize = true;
+            this.labelOr.ForeColor = System.Drawing.Color.Gray;
+            this.labelOr.Location = new System.Drawing.Point(155, 130);
+            this.labelOr.Name = "labelOr";
+            this.labelOr.Size = new System.Drawing.Size(143, 25);
+            this.labelOr.TabIndex = 2;
+            this.labelOr.Text = "Or continue with";
             // 
             // label6
             // 
-            label6.Cursor = Cursors.Hand;
-            label6.ForeColor = Color.Gray;
-            label6.Location = new Point(0, 380);
-            label6.Name = "label6";
-            label6.Size = new Size(420, 27);
-            label6.TabIndex = 3;
-            label6.Text = "Don't have an account? Sign up";
-            label6.TextAlign = ContentAlignment.MiddleCenter;
-            label6.Click += SwitchToSignup;
+            this.label6.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.label6.ForeColor = System.Drawing.Color.Gray;
+            this.label6.Location = new System.Drawing.Point(0, 380);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(420, 27);
+            this.label6.TabIndex = 3;
+            this.label6.Text = "Don't have an account? Sign up";
+            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label6.Click += new System.EventHandler(this.SwitchToSignup);
             // 
             // btnSignIn
             // 
-            btnSignIn.Location = new Point(0, 320);
-            btnSignIn.Name = "btnSignIn";
-            btnSignIn.Radius = 8;
-            btnSignIn.Size = new Size(420, 50);
-            btnSignIn.TabIndex = 4;
-            btnSignIn.Text = "Sign In";
-            btnSignIn.Type = AntdUI.TTypeMini.Primary;
-            btnSignIn.Click += btnSignIn_Click;
+            this.btnSignIn.Location = new System.Drawing.Point(0, 320);
+            this.btnSignIn.Name = "btnSignIn";
+            this.btnSignIn.Radius = 8;
+            this.btnSignIn.Size = new System.Drawing.Size(420, 50);
+            this.btnSignIn.TabIndex = 4;
+            this.btnSignIn.Text = "Sign In";
+            this.btnSignIn.Type = AntdUI.TTypeMini.Primary;
+            this.btnSignIn.Click += new System.EventHandler(this.btnSignIn_Click);
             // 
             // checkbox1
             // 
-            checkbox1.Location = new Point(5, 275);
-            checkbox1.Name = "checkbox1";
-            checkbox1.Size = new Size(192, 34);
-            checkbox1.TabIndex = 5;
-            checkbox1.Text = "Remember me";
+            this.checkbox1.Location = new System.Drawing.Point(5, 275);
+            this.checkbox1.Name = "checkbox1";
+            this.checkbox1.Size = new System.Drawing.Size(192, 34);
+            this.checkbox1.TabIndex = 5;
+            this.checkbox1.Text = "Remember me";
             // 
             // txtLoginPass
             // 
-            txtLoginPass.Location = new Point(0, 220);
-            txtLoginPass.Name = "txtLoginPass";
-            txtLoginPass.PlaceholderText = "Password";
-            txtLoginPass.Radius = 8;
-            txtLoginPass.Size = new Size(420, 45);
-            txtLoginPass.Suffix = (Image)resources.GetObject("txtLoginPass.Suffix");
-            txtLoginPass.TabIndex = 6;
-            txtLoginPass.UseSystemPasswordChar = true;
+            this.txtLoginPass.Location = new System.Drawing.Point(0, 220);
+            this.txtLoginPass.Name = "txtLoginPass";
+            this.txtLoginPass.PlaceholderText = "Password";
+            this.txtLoginPass.Radius = 8;
+            this.txtLoginPass.Size = new System.Drawing.Size(420, 45);
+            this.txtLoginPass.TabIndex = 6;
+            this.txtLoginPass.UseSystemPasswordChar = true;
             // 
             // txtLoginEmail
             // 
-            txtLoginEmail.Location = new Point(0, 160);
-            txtLoginEmail.Name = "txtLoginEmail";
-            txtLoginEmail.PlaceholderText = "Email Address";
-            txtLoginEmail.Radius = 8;
-            txtLoginEmail.Size = new Size(420, 45);
-            txtLoginEmail.TabIndex = 7;
+            this.txtLoginEmail.Location = new System.Drawing.Point(0, 160);
+            this.txtLoginEmail.Name = "txtLoginEmail";
+            this.txtLoginEmail.PlaceholderText = "Email Address";
+            this.txtLoginEmail.Radius = 8;
+            this.txtLoginEmail.Size = new System.Drawing.Size(420, 45);
+            this.txtLoginEmail.TabIndex = 7;
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 20F, FontStyle.Bold);
-            label4.Location = new Point(0, 0);
-            label4.Name = "label4";
-            label4.Size = new Size(297, 54);
-            label4.TabIndex = 8;
-            label4.Text = "Welcome Back";
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Bold);
+            this.label4.Location = new System.Drawing.Point(0, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(297, 54);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Welcome Back";
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(10F, 25F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1000, 650);
-            Controls.Add(panel2);
-            Controls.Add(panel1);
-            FormBorderStyle = FormBorderStyle.None;
-            Name = "Form1";
-            StartPosition = FormStartPosition.CenterScreen;
-            Text = "Form1";
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-            panel2.ResumeLayout(false);
-            pnlLogin.ResumeLayout(false);
-            pnlLogin.PerformLayout();
-            pnlSignup.ResumeLayout(false);
-            pnlSignup.PerformLayout();
-            panelRoles.ResumeLayout(false);
-            ResumeLayout(false);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(1000, 650);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Form1";
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panel2.ResumeLayout(false);
+            this.pnlSignup.ResumeLayout(false);
+            this.pnlSignup.PerformLayout();
+            this.panelRoles.ResumeLayout(false);
+            this.pnlLogin.ResumeLayout(false);
+            this.pnlLogin.PerformLayout();
+            this.ResumeLayout(false);
         }
 
         #endregion
 
         // Controls
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label lblMain;
-        private System.Windows.Forms.Label lblBlue;
-        private System.Windows.Forms.Label lblSub;
-        private System.Windows.Forms.Panel panel2;
-        private AntdUI.Button btnMinimize;
-        private AntdUI.Button btnClose;
+        private System.Windows.Forms.Panel panel1; private System.Windows.Forms.PictureBox pictureBox1; private System.Windows.Forms.Label lblMain; private System.Windows.Forms.Label lblBlue; private System.Windows.Forms.Label lblSub;
+        private System.Windows.Forms.Panel panel2; private AntdUI.Button btnMinimize; private AntdUI.Button btnClose;
 
         // Login Controls
-        private System.Windows.Forms.Panel pnlLogin;
-        private System.Windows.Forms.Label label6;
-        private AntdUI.Button btnSignIn;
-        private AntdUI.Checkbox checkbox1;
-        private AntdUI.Input txtLoginPass;
-        private AntdUI.Input txtLoginEmail;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label labelOr;
-        private AntdUI.Button btnFacebook;
-        private AntdUI.Button btnGoogle;
+        private System.Windows.Forms.Panel pnlLogin; private System.Windows.Forms.Label label6; private AntdUI.Button btnSignIn; private AntdUI.Checkbox checkbox1; private AntdUI.Input txtLoginPass; private AntdUI.Input txtLoginEmail; private System.Windows.Forms.Label label4; private System.Windows.Forms.Label labelOr; private AntdUI.Button btnFacebook; private AntdUI.Button btnGoogle; private System.Windows.Forms.Label lblForgot;
 
         // Signup Controls (NOW IN DESIGNER!)
-        private System.Windows.Forms.Panel pnlSignup;
-        private System.Windows.Forms.Label lblSignupTitle;
-        private System.Windows.Forms.Label lblLoginLink;
-        private System.Windows.Forms.Panel panelRoles;
-        private AntdUI.Button btnRoleTenant;
-        private AntdUI.Button btnRoleLandlord;
-        private AntdUI.Input txtSignupName;
-        private AntdUI.Input txtSignupPhone;
-        private AntdUI.Input txtSignupEmail;
-        private AntdUI.Input txtSignupPass;
-        private AntdUI.Checkbox chkAgree;
-        private AntdUI.Button btnSignup;
-        private System.Windows.Forms.Label lblSignupOr;
-        private AntdUI.Button btnSignupGoogle;
-        private AntdUI.Button btnSignupFB;
+        private System.Windows.Forms.Panel pnlSignup; private System.Windows.Forms.Label lblSignupTitle; private System.Windows.Forms.Label lblLoginLink; private System.Windows.Forms.Panel panelRoles; private AntdUI.Button btnRoleTenant; private AntdUI.Button btnRoleLandlord; private AntdUI.Input txtSignupName; private AntdUI.Input txtSignupPhone; private AntdUI.Input txtSignupEmail; private AntdUI.Input txtSignupPass; private AntdUI.Checkbox chkAgree; private AntdUI.Button btnSignup; private System.Windows.Forms.Label lblSignupOr; private AntdUI.Button btnSignupGoogle; private AntdUI.Button btnSignupFB;
     }
 }
