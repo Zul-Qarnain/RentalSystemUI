@@ -6,12 +6,15 @@ using System.Windows.Forms;
 using AntdUI;
 using Microsoft.Data.SqlClient;
 using RentalSystemUI.Controllers;
+using RentalSystemUI.Services;
+using RentalSystemUI.Models;
 
 namespace RentalSystemUI.Forms
 {
     public partial class PropertyDetails : Form
     {
         private int _propertyId;
+        private PropertyService _propService = new PropertyService();
 
         // --- CUSTOM EVENT: Tell parent to close me ---
         public event EventHandler? BackRequested;
@@ -19,6 +22,10 @@ namespace RentalSystemUI.Forms
         public PropertyDetails(int propertyId)
         {
             InitializeComponent();
+            this.Size = new Size(1280, 800);
+            this.MinimumSize = new Size(1280, 800);
+            this.MaximumSize = new Size(1280, 800);
+            this.StartPosition = FormStartPosition.CenterScreen;
             _propertyId = propertyId;
             LoadPropertyData();
             AddDummyAmenities();
@@ -28,36 +35,26 @@ namespace RentalSystemUI.Forms
         {
             try
             {
-                DatabaseHelper db = new DatabaseHelper();
-                // 1. GET DETAILS
-                string queryProps = "SELECT Title, Address, City, RentAmount, Description FROM PROPERTIES WHERE PropertyID = @pid";
-                SqlParameter[] p1 = { new SqlParameter("@pid", _propertyId) };
+                // Call Service
+                var prop = _propService.GetPropertyDetails(_propertyId);
 
-                DataTable dt = db.ExecuteQuery(queryProps, p1);
-
-                if (dt.Rows.Count > 0)
+                if (prop != null)
                 {
-                    DataRow row = dt.Rows[0];
-                    lblTitle.Text = row["Title"]?.ToString() ?? "Unknown Title";
-                    lblSubHeader.Text = "★ 4.98 (124 reviews)  •  " + (row["Address"]?.ToString() ?? "") + ", " + (row["City"]?.ToString() ?? "");
-                    lblDescription.Text = row["Description"]?.ToString() ?? "No description available.";
+                    lblTitle.Text = prop.Title ?? "Unknown Title";
+                    lblSubHeader.Text = "★ 4.98 (124 reviews)  •  " + (prop.Address ?? "") + ", " + (prop.City ?? "");
+                    lblDescription.Text = prop.Description ?? "No description available.";
 
-                    decimal rent = 0;
-                    decimal.TryParse(row["RentAmount"]?.ToString(), out rent);
+                    decimal rent = prop.RentAmount;
                     lblPriceLarge.Text = "$" + rent.ToString("N0");
                     lblTotalValue.Text = "$" + (rent + 150).ToString("N0");
+
+                    // Images
+                    if (prop.ImagePaths.Count > 0) SetImage(picMain, prop.ImagePaths[0]);
+                    if (prop.ImagePaths.Count > 1) SetImage(picSub1, prop.ImagePaths[1]);
+                    if (prop.ImagePaths.Count > 2) SetImage(picSub2, prop.ImagePaths[2]);
+                    if (prop.ImagePaths.Count > 3) SetImage(picSub3, prop.ImagePaths[3]);
+                    if (prop.ImagePaths.Count > 4) SetImage(picSub4, prop.ImagePaths[4]);
                 }
-
-                // 2. GET IMAGES
-                string queryImages = "SELECT ImagePath FROM PROPERTY_IMAGES WHERE PropertyID = @pid";
-                SqlParameter[] p2 = { new SqlParameter("@pid", _propertyId) };
-                DataTable dtImages = db.ExecuteQuery(queryImages, p2);
-
-                if (dtImages.Rows.Count > 0) SetImage(picMain, dtImages.Rows[0]["ImagePath"]?.ToString() ?? "");
-                if (dtImages.Rows.Count > 1) SetImage(picSub1, dtImages.Rows[1]["ImagePath"]?.ToString() ?? "");
-                if (dtImages.Rows.Count > 2) SetImage(picSub2, dtImages.Rows[2]["ImagePath"]?.ToString() ?? "");
-                if (dtImages.Rows.Count > 3) SetImage(picSub3, dtImages.Rows[3]["ImagePath"]?.ToString() ?? "");
-                if (dtImages.Rows.Count > 4) SetImage(picSub4, dtImages.Rows[4]["ImagePath"]?.ToString() ?? "");
             }
             catch (Exception ex)
             {

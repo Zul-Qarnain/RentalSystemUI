@@ -5,14 +5,22 @@ using System.Drawing;
 using System.Windows.Forms;
 using AntdUI;
 using RentalSystemUI.Controllers;
+using RentalSystemUI.Services;
+using RentalSystemUI.Models;
 
 namespace RentalSystemUI.Forms
 {
     public partial class RentAllSearch : Form
     {
+        private PropertyService _propService = new PropertyService();
+
         public RentAllSearch()
         {
             InitializeComponent();
+            this.Size = new Size(1280, 800);
+            this.MinimumSize = new Size(1280, 800);
+            this.MaximumSize = new Size(1280, 800);
+            this.StartPosition = FormStartPosition.CenterScreen;
             LoadRealData();
         }
 
@@ -21,16 +29,23 @@ namespace RentalSystemUI.Forms
             try
             {
                 if (flowListings != null) flowListings.Controls.Clear();
-                DatabaseHelper db = new DatabaseHelper();
-                string query = @"SELECT p.PropertyID, p.Title, p.Address, p.RentAmount, (SELECT TOP 1 ImagePath FROM PROPERTY_IMAGES pi WHERE pi.PropertyID = p.PropertyID) as CoverImage FROM PROPERTIES p WHERE p.Status = 'Available'";
-                DataTable table = db.ExecuteQuery(query);
+                
+                // Use Service
+                var properties = _propService.GetSearchProperties();
 
-                if (table == null || table.Rows.Count == 0) return;
+                if (properties == null || properties.Count == 0) return;
 
-                foreach (DataRow row in table.Rows)
+                foreach (var prop in properties)
                 {
-                    int id = Convert.ToInt32(row["PropertyID"]);
-                    AddProperty(id, row["Title"].ToString() ?? "N/A", row["Address"].ToString() ?? "N/A", "$" + Convert.ToDecimal(row["RentAmount"]).ToString("N0"), "4.8", "", row["CoverImage"].ToString() ?? "");
+                    AddProperty(
+                        prop.PropertyID, 
+                        prop.Title, 
+                        prop.Address, 
+                        "$" + prop.RentAmount.ToString("N0"), 
+                        "4.8", 
+                        "", 
+                        prop.CoverImage
+                    );
                 }
             }
             catch (Exception ex) { AntdUI.Message.error(this, "Error: " + ex.Message); }
