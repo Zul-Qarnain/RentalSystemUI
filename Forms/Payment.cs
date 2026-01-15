@@ -9,6 +9,10 @@ namespace RentalSystemUI.Forms
         public Payment()
         {
             InitializeComponent();
+            this.Size = new Size(1280, 800);
+            this.MinimumSize = new Size(1280, 800);
+            this.MaximumSize = new Size(1280, 800);
+            this.StartPosition = FormStartPosition.CenterScreen;
             SetupUIComponents();
         }
 

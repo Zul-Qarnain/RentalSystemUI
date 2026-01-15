@@ -13,8 +13,21 @@ namespace RentalSystemUI
 
             try
             {
-                // Force AntdUI English (Optional)
-                try { AntdUI.Localization.SetLanguage("en-US"); } catch { }
+                // Initializer Database Tables
+                try { new RentalSystemUI.Data.DatabaseInitializer().EnsureTablesExist(); } catch { }
+
+                // DEBUG: Check Columns
+                using (var conn = new RentalSystemUI.Data.Database().GetConnection())
+                {
+                    conn.Open();
+                    Console.WriteLine("\n--- DEBUG: PAYMENTS COLUMNS ---");
+                    using (var cmd = new Microsoft.Data.SqlClient.SqlCommand("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'PAYMENTS'", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read()) Console.WriteLine(reader[0]);
+                    }
+                    Console.WriteLine("---------------------------------\n");
+                }
 
                 // Check if .env file exists before running
                 if (!System.IO.File.Exists(".env"))
@@ -24,11 +37,13 @@ namespace RentalSystemUI
                 }
 
                 // Run the App
-                Application.Run(new Form1());
+                Application.Run(new HomeownerDashboard());
             }
             catch (Exception ex)
             {
                 // This catches the silent crash and shows it to you
+                Console.WriteLine($"Application Crash: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
                 MessageBox.Show($"Application Crash:\n\n{ex.Message}\n\nStack Trace:\n{ex.StackTrace}", "Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

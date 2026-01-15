@@ -4,13 +4,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using AntdUI;
 using RentalSystemUI.Controllers;
+using RentalSystemUI.Services;
+using RentalSystemUI.Models;
 
 namespace RentalSystemUI.Forms
 {
     public partial class Form1 : Form
     {
-        // Database & Helper
-        private DatabaseHelper db = new DatabaseHelper();
+        // Service
+        private AuthService _authService = new AuthService();
 
         // UI State Variables
         private string selectedRole = "Tenant";
@@ -20,6 +22,10 @@ namespace RentalSystemUI.Forms
         public Form1()
         {
             InitializeComponent();
+            this.Size = new Size(1280, 800);
+            this.MinimumSize = new Size(1280, 800);
+            this.MaximumSize = new Size(1280, 800);
+            this.StartPosition = FormStartPosition.CenterScreen;
             SetupVisuals();
 
             // Dragging Logic
@@ -63,9 +69,12 @@ namespace RentalSystemUI.Forms
                 return;
             }
 
-            if (db.ValidateUser(email, pass, out string role, out string name))
+            // Call Service
+            var user = _authService.Login(email, pass);
+
+            if (user != null)
             {
-                AntdUI.Message.success(this, $"Welcome back, {name}!");
+                AntdUI.Message.success(this, $"Welcome back, {user.FullName}!");
 
                 // --- OPEN SEARCH & CLOSE LOGIN PROPERLY ---
                 RentAllSearch searchForm = new RentAllSearch();
@@ -92,7 +101,7 @@ namespace RentalSystemUI.Forms
                 email = form.InputValue;
             }
 
-            if (!db.UserExists(email, ""))
+            if (!_authService.EmailExists(email)) // Use specific Email Check if possible, or UserExists(email, "")
             {
                 AntdUI.Message.error(this, "Email not found.");
                 return;
@@ -128,7 +137,7 @@ namespace RentalSystemUI.Forms
                     {
                         if (passForm.ShowDialog() == DialogResult.OK)
                         {
-                            db.UpdatePassword(email, passForm.InputValue);
+                            _authService.UpdatePassword(email, passForm.InputValue);
                             AntdUI.Message.success(this, "Password Reset! Please Login.");
                         }
                     }
@@ -161,7 +170,7 @@ namespace RentalSystemUI.Forms
                 return;
             }
 
-            if (db.UserExists(email, phone))
+            if (_authService.UserExists(email, phone))
             {
                 AntdUI.Message.error(this, "Account already exists.");
                 return;
@@ -193,7 +202,15 @@ namespace RentalSystemUI.Forms
                     if (form.InputValue.Trim() == otp)
                     {
                         // Register
-                        if (db.RegisterUser(name, email, phone, pass, selectedRole))
+                        var newUser = new User
+                        {
+                            FullName = name,
+                            Email = email,
+                            Phone = phone,
+                            UserType = selectedRole
+                        };
+
+                        if (_authService.Register(newUser, pass))
                         {
                             AntdUI.Message.success(this, "Account Created! Login now.");
                             SwitchToLogin(null, null);
@@ -244,7 +261,7 @@ namespace RentalSystemUI.Forms
         }
 
         // --- Window & Dummy Events ---
-        private void btnClose_Click(object sender, EventArgs e) { Application.Exit(); }
+        private void btnClose_Click(object sender, EventArgs e) { System.Windows.Forms.Application.Exit(); }
         private void btnMinimize_Click(object sender, EventArgs e) { this.WindowState = FormWindowState.Minimized; }
         private void btnGoogle_Click(object sender, EventArgs e) { AntdUI.Message.info(this, "Google Clicked"); }
         private void btnSignupFB_Click(object sender, EventArgs e) { AntdUI.Message.info(this, "Facebook Clicked"); }
