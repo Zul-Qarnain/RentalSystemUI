@@ -6,27 +6,15 @@ using RentalSystemUI.Services;
 
 namespace RentalSystemUI.Forms.DashboardSections
 {
-    public class ReviewList : UserControl
+    public partial class ReviewList : Form
     {
         private LandlordService _service = new LandlordService();
         private int _landlordId = 1;
-        private FlowLayoutPanel _flow = null!;
 
         public ReviewList()
         {
-            this.Dock = DockStyle.Fill;
-            this.BackColor = Color.FromArgb(245, 247, 250);
-            InitializeUI();
+            InitializeComponent();
             LoadData();
-        }
-
-        private void InitializeUI()
-        {
-            AntdUI.Label lblTitle = new AntdUI.Label { Text = "Tenant Feedback", Font = new Font("Segoe UI", 20, FontStyle.Bold), Dock = DockStyle.Top, Height = 60, Padding = new Padding(20, 15, 0, 0), ForeColor = Color.FromArgb(38, 38, 38) };
-            this.Controls.Add(lblTitle);
-
-            _flow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(20) };
-            this.Controls.Add(_flow);
         }
 
         private void LoadData()
@@ -36,7 +24,7 @@ namespace RentalSystemUI.Forms.DashboardSections
 
             if (reviews.Count == 0)
             {
-                _flow.Controls.Add(new AntdUI.Label { Text = "No feedback received yet.", AutoSize = true, ForeColor = Color.Gray, Font = new Font("Segoe UI", 12) });
+                _flow.Controls.Add(new AntdUI.Label { Text = "No feedback received yet.", AutoSize = true, ForeColor = Styles.TextGray, Font = Styles.SubHeader });
                 return;
             }
 
@@ -48,40 +36,51 @@ namespace RentalSystemUI.Forms.DashboardSections
 
         private AntdUI.Panel CreateReviewCard(RentalSystemUI.Models.Review r)
         {
-            AntdUI.Panel card = new AntdUI.Panel { Size = new Size(800, 150), Radius = 12, Shadow = 6, Margin = new Padding(0, 0, 0, 15), BackColor = Color.White };
+            AntdUI.Panel card = new AntdUI.Panel 
+            { 
+                Width = 1000, 
+                Height = 160, 
+                Radius = 15, 
+                Shadow = 5, 
+                Margin = new Padding(0, 0, 0, 20), 
+                BackColor = Color.White 
+            };
 
-            // Stars
             string stars = new string('★', r.Rating) + new string('☆', 5 - r.Rating);
-            AntdUI.Label lblStars = new AntdUI.Label { Text = stars, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.Gold, Location = new Point(25, 15), AutoSize = true };
-
-            // Tenant Info
-            AntdUI.Label lblTenant = new AntdUI.Label { Text = r.TenantName, Font = new Font("Segoe UI", 11, FontStyle.Bold), Location = new Point(25, 45), AutoSize = true, ForeColor = Color.FromArgb(38, 38, 38) };
-            AntdUI.Label lblDate = new AntdUI.Label { Text = r.CreatedAt.ToShortDateString(), ForeColor = Color.Gray, Location = new Point(650, 20), AutoSize = true, Font = new Font("Segoe UI", 9) };
+            AntdUI.Label lblStars = new AntdUI.Label { Text = stars, Font = new Font("Segoe UI", 16, FontStyle.Bold), ForeColor = Color.Gold, Location = new Point(20, 20), AutoSize = true };
             
-            // Comment
-            AntdUI.Label lblComment = new AntdUI.Label { Text = "\"" + r.Comment + "\"", Location = new Point(25, 75), Size = new Size(700, 30), ForeColor = Color.FromArgb(89, 89, 89), Font = new Font("Segoe UI", 11, FontStyle.Italic), AutoEllipsis = true };
+            AntdUI.Label lblTenant = new AntdUI.Label { Text = r.TenantName, Font = Styles.Bold, Location = new Point(200, 25), AutoSize = true, ForeColor = Styles.DarkBlue };
+            AntdUI.Label lblDate = new AntdUI.Label { Text = r.CreatedAt.ToShortDateString(), ForeColor = Styles.TextGray, Location = new Point(card.Width - 120, 25), AutoSize = true, Font = Styles.Small, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            
+            AntdUI.Label lblComment = new AntdUI.Label 
+            { 
+                 Text = r.Comment, 
+                 Location = new Point(20, 60), 
+                 Size = new Size(card.Width - 40, 50), 
+                 ForeColor = Styles.TextGray, 
+                 Font = new Font("Segoe UI", 10, FontStyle.Italic), 
+                 AutoEllipsis = true,
+                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            };
+
+            if (r.IsResolved)
+            {
+                AntdUI.Button badge = new AntdUI.Button { Text = "RESOLVED", Type = TTypeMini.Default, ForeColor = Styles.GreenTxt, BackColor = Styles.GreenBg, Location = new Point(20, 115), Size = new Size(100, 30), BorderWidth = 0, Radius = 6, Font = Styles.Bold };
+                card.Controls.Add(badge);
+            }
+            else
+            {
+                AntdUI.Button btnReply = new AntdUI.Button { Text = "Write Reply", Type = TTypeMini.Primary, Ghost = true, ForeColor = Styles.Blue, Location = new Point(20, 115), Size = new Size(120, 35), Radius = 8, Font = Styles.Bold, BorderWidth = 1 };
+                btnReply.Click += (s, e) => {
+                     if (this.FindForm() is Form f) AntdUI.Message.info(f, "Reply feature coming soon.");
+                };
+                card.Controls.Add(btnReply);
+            }
 
             card.Controls.Add(lblComment);
             card.Controls.Add(lblDate);
             card.Controls.Add(lblTenant);
             card.Controls.Add(lblStars);
-
-            // Actions
-             if (r.IsResolved)
-            {
-                AntdUI.Button badge = new AntdUI.Button { Text = "RESOLVED", Type = TTypeMini.Default, ForeColor = Color.Green, BackColor = Color.FromArgb(246, 255, 237), Location = new Point(650, 100), Size = new Size(100, 30), BorderWidth = 0, Radius = 4 };
-                card.Controls.Add(badge);
-            }
-            else
-            {
-                AntdUI.Button btnReply = new AntdUI.Button { Text = "Reply", Type = TTypeMini.Primary, Location = new Point(25, 110), Size = new Size(90, 30), Radius = 6 };
-                btnReply.Ghost = true; // Outline style
-                btnReply.Click += (s, e) => {
-                     // Mock Reply action
-                     if (this.FindForm() is Form f) AntdUI.Message.info(f, "Reply feature coming soon.");
-                };
-                card.Controls.Add(btnReply);
-            }
 
             return card;
         }

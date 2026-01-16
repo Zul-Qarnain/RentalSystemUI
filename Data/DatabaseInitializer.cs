@@ -5,8 +5,29 @@ namespace RentalSystemUI.Data
 {
     public class DatabaseInitializer : Database
     {
+        private void EnsureDatabaseExists()
+        {
+            string connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+                                ?? throw new InvalidOperationException("DB_CONNECTION_STRING is missing in .env layer");
+
+            var builder = new SqlConnectionStringBuilder(connString);
+            var dbName = builder.InitialCatalog;
+            builder.InitialCatalog = "master";
+
+            using (var conn = new SqlConnection(builder.ConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand($"IF DB_ID('{dbName}') IS NULL CREATE DATABASE [{dbName}];", conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public void EnsureTablesExist()
         {
+            EnsureDatabaseExists();
+
             using (var conn = GetConnection())
             {
                 conn.Open();

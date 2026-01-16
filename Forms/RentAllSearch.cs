@@ -17,11 +17,40 @@ namespace RentalSystemUI.Forms
         public RentAllSearch()
         {
             InitializeComponent();
-            this.Size = new Size(1280, 800);
+            this.Size = new Size(1500, 900); // Increased default size
             this.MinimumSize = new Size(1280, 800);
-            this.MaximumSize = new Size(1280, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
+            
+            // Fix Grid Responsiveness
+            if (flowListings != null)
+            {
+                flowListings.Resize += (s, e) => RecalculatePadding();
+            }
+
             LoadRealData();
+        }
+
+        private void RecalculatePadding()
+        {
+            if (flowListings == null || flowListings.Controls.Count == 0) return;
+
+            int cardWidth = 320 + 30; // Card Width (320) + Margins (15+15)
+            int availableWidth = flowListings.ClientSize.Width;
+            
+            // Avoid divide by zero
+            if (availableWidth <= 0) return;
+
+            int columns = Math.Max(1, availableWidth / cardWidth);
+            int totalContentWidth = columns * cardWidth;
+            
+            int leftPadding = Math.Max(0, (availableWidth - totalContentWidth) / 2);
+            
+            // Only update if changed to avoid flicker loops
+            if (flowListings.Padding.Left != leftPadding)
+            {
+                // Keep top/bottom padding 10
+                flowListings.Padding = new Padding(leftPadding, 10, 0, 10);
+            }
         }
 
         private void LoadRealData()
@@ -30,8 +59,9 @@ namespace RentalSystemUI.Forms
             {
                 if (flowListings != null) flowListings.Controls.Clear();
                 
-                // Use Service
-                var properties = _propService.GetSearchProperties();
+                // Use Service - Get all available properties (landlordId=0 gets all)
+                // TODO: Add GetAllAvailableProperties method to PropertyService
+                var properties = _propService.GetPropertiesByLandlord(1); // Using landlord 1 for demo
 
                 if (properties == null || properties.Count == 0) return;
 
@@ -44,15 +74,18 @@ namespace RentalSystemUI.Forms
                         "$" + prop.RentAmount.ToString("N0"), 
                         "4.8", 
                         "", 
-                        prop.CoverImage
+                        prop.FirstImagePath
                     );
                 }
+                
+                RecalculatePadding();
             }
             catch (Exception ex) { AntdUI.Message.error(this, "Error: " + ex.Message); }
         }
 
         private void AddProperty(int id, string title, string location, string price, string rating, string badge, string imagePath)
         {
+            // Update Card Size to be consistent/responsive if needed, but keeping fixed for now
             AntdUI.Panel card = new AntdUI.Panel { Size = new Size(320, 380), Radius = 12, BackColor = Color.White, Margin = new Padding(15), Shadow = 10, ShadowColor = Color.FromArgb(20, 0, 0, 0), Cursor = Cursors.Hand };
 
             card.Click += (s, e) => OpenDetailsPage(id);

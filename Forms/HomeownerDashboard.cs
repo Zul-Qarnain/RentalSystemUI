@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AntdUI;
@@ -14,9 +15,10 @@ namespace RentalSystemUI.Forms
         private System.Windows.Forms.Panel _sidebar = null!;
         private AntdUI.Panel _profileHeader = null!;
         private FlowLayoutPanel _menuPanel = null!;
-        private AntdUI.Button _btnSignOut = null!;
         private AntdUI.Label _lblRole = null!;
         private AntdUI.Label _lblName = null!;
+        private System.Windows.Forms.Panel _signOutPanel = null!;
+        private AntdUI.Label _lblSignOut = null!;
 
         private bool dragging = false;
         private Point dragCursorPoint, dragFormPoint;
@@ -25,26 +27,24 @@ namespace RentalSystemUI.Forms
 
         public HomeownerDashboard()
         {
-            // Manual UI Setup - No Designer
-            // Form Properties
-            this.Size = new Size(1366, 800); // Increased width slightly
-            this.StartPosition = FormStartPosition.CenterScreen;
-            // this.WindowState = FormWindowState.Maximized; // Manual control
-            this.FormBorderStyle = FormBorderStyle.None;
-            this.DoubleBuffered = true;
-            this.Text = "Rental Manager Admin";
-            this.Icon = SystemIcons.Application; 
-
+            InitializeComponent();
+            
+            // Skip runtime code in designer
+            if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return;
+            
             SetupShell();
-
-            // Navigate to default page
-            NavigateTo(new DashboardHome(), "Dashboard Overview");
+            NavigateTo(new DashboardHome(this), "Dashboard Overview");
         }
 
         private void SetupShell()
         {
             this.Controls.Clear();
-            this.BackColor = ColorTranslator.FromHtml("#f6f7f8"); // background-light
+            this.Size = new Size(1500, 900);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.DoubleBuffered = true;
+            this.Text = "Rental Manager Admin";
+            this.BackColor = ColorTranslator.FromHtml("#f6f7f8");
 
             // --- 1. SIDEBAR ---
             _sidebar = new System.Windows.Forms.Panel 
@@ -55,7 +55,7 @@ namespace RentalSystemUI.Forms
                 Padding = new Padding(16) 
             };
             
-            // Border Right (Separator)
+            // Border Right
             System.Windows.Forms.Panel borderRight = new System.Windows.Forms.Panel 
             { 
                 Dock = DockStyle.Right, 
@@ -67,35 +67,45 @@ namespace RentalSystemUI.Forms
             // Sidebar Content
             System.Windows.Forms.Panel sidebarContent = new System.Windows.Forms.Panel { Dock = DockStyle.Fill };
             
-            // -- Toggle Button (Top Left of Sidebar) --
-            AntdUI.Button btnToggle = new AntdUI.Button
+            // Toggle Button
+            string assetsPathForToggle = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
+            System.Windows.Forms.Panel btnToggle = new System.Windows.Forms.Panel
             {
-                IconSvg = "menu-fold", 
                 Size = new Size(32, 32),
-                Radius = 4,
-                Type = TTypeMini.Default,
+                Location = new Point(0, 0),
                 BackColor = Color.Transparent,
-                ForeColor = Color.Gray,
-                Location = new Point(0, 0)
+                Cursor = Cursors.Hand
             };
-            btnToggle.Click += (s, e) => ToggleSidebar(btnToggle);
             
-            // -- Profile Header --
+            PictureBox toggleIcon = new PictureBox
+            {
+                Size = new Size(20, 20),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Location = new Point(6, 6),
+                BackColor = Color.Transparent
+            };
+            string menuIconPath = System.IO.Path.Combine(assetsPathForToggle, "menu.png");
+            if (System.IO.File.Exists(menuIconPath))
+            {
+                try { toggleIcon.Image = Image.FromFile(menuIconPath); } catch { }
+            }
+            btnToggle.Controls.Add(toggleIcon);
+            btnToggle.Click += (s, e) => ToggleSidebar();
+            toggleIcon.Click += (s, e) => ToggleSidebar();
+            
+            // Profile Header
             _profileHeader = new AntdUI.Panel 
             { 
                 Dock = DockStyle.Top, 
                 Height = 80, 
-                BackColor = Color.Transparent, 
-                Padding = new Padding(0) 
+                BackColor = Color.Transparent
             };
             
-            // Add Toggle to Header
             btnToggle.Location = new Point(0, 0);
             _profileHeader.Controls.Add(btnToggle);
 
             AntdUI.Button avatar = new AntdUI.Button 
             { 
-                Text = "", 
                 IconSvg = "user", 
                 BackColor = Color.Gray, 
                 Size = new Size(40, 40), 
@@ -108,7 +118,7 @@ namespace RentalSystemUI.Forms
             _lblName = new AntdUI.Label 
             { 
                 Text = "Rental Manager", 
-                Font = new Font("Manrope", 10, FontStyle.Bold), 
+                Font = new Font("Segoe UI", 10, FontStyle.Bold), 
                 ForeColor = ColorTranslator.FromHtml("#0f172a"), 
                 Location = new Point(50, 35), 
                 AutoSize = true 
@@ -117,7 +127,7 @@ namespace RentalSystemUI.Forms
             _lblRole = new AntdUI.Label 
             { 
                 Text = "Admin Console", 
-                Font = new Font("Manrope", 8), 
+                Font = new Font("Segoe UI", 8), 
                 ForeColor = ColorTranslator.FromHtml("#64748b"), 
                 Location = new Point(50, 55), 
                 AutoSize = true 
@@ -128,7 +138,7 @@ namespace RentalSystemUI.Forms
             _profileHeader.Controls.Add(avatar);
             sidebarContent.Controls.Add(_profileHeader);
 
-            // -- Nav Menu --
+            // Nav Menu
             _menuPanel = new FlowLayoutPanel 
             { 
                 Dock = DockStyle.Fill, 
@@ -137,40 +147,65 @@ namespace RentalSystemUI.Forms
                 Padding = new Padding(0, 10, 0, 0) 
             };
             
-            // Add Menu Items
             string assetsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
             
             AddMenuButton(_menuPanel, "Dashboard", System.IO.Path.Combine(assetsPath, "dashboard.png"), true, () => NavigateTo(new DashboardHome(this), "Dashboard Overview"));
-            AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => NavigateTo(new MyProperties(), "My Properties"));
-            AddMenuButton(_menuPanel, "Tenants", System.IO.Path.Combine(assetsPath, "users.png"), false, () => { }); // Placeholder
+            AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => NavigateTo(new MyProperties(1, this), "My Properties"));
             AddMenuButton(_menuPanel, "Financials", System.IO.Path.Combine(assetsPath, "payment.png"), false, () => NavigateTo(new PaymentList(), "Financials"));
             AddMenuButton(_menuPanel, "Requests", System.IO.Path.Combine(assetsPath, "calendar.png"), false, () => NavigateTo(new RequestList(), "Maintenance Requests"));
-            AddMenuButton(_menuPanel, "Settings", System.IO.Path.Combine(assetsPath, "settings.png"), false, () => NavigateTo(new Settings(), "Settings"));
+            AddMenuButton(_menuPanel, "Settings", System.IO.Path.Combine(assetsPath, "settings.png"), false, () => NavigateTo(new Settings(1), "Settings"));
 
             sidebarContent.Controls.Add(_menuPanel);
             _menuPanel.BringToFront();
             _profileHeader.SendToBack();
 
-            // -- Sign Out Button --
-            _btnSignOut = new AntdUI.Button 
-            { 
-                Text = "Sign Out", 
-                IconSvg = "logout", 
-                Type = TTypeMini.Default, 
-                Dock = DockStyle.Bottom, 
-                Height = 45, 
-                BackColor = ColorTranslator.FromHtml("#f1f5f9"), 
-                ForeColor = ColorTranslator.FromHtml("#334155"), 
-                Radius = 8, 
-                Font = new Font("Segoe UI", 9, FontStyle.Bold) // MODERN FONT
+            // Sign Out Button
+            _signOutPanel = new System.Windows.Forms.Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 50,
+                BackColor = ColorTranslator.FromHtml("#f1f5f9"),
+                Cursor = Cursors.Hand
             };
-            _btnSignOut.Click += (s, e) => this.Close();
+            
+            PictureBox logoutIcon = new PictureBox
+            {
+                Size = new Size(20, 20),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Location = new Point(16, 15),
+                BackColor = Color.Transparent
+            };
+            string logoutIconPath = System.IO.Path.Combine(assetsPath, "log-out.png");
+            if (System.IO.File.Exists(logoutIconPath))
+            {
+                try { logoutIcon.Image = Image.FromFile(logoutIconPath); } catch { }
+            }
+            
+            _lblSignOut = new AntdUI.Label
+            {
+                Text = "Sign Out",
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = ColorTranslator.FromHtml("#334155"),
+                Location = new Point(44, 13),
+                AutoSize = true,
+                BackColor = Color.Transparent
+            };
+            
+            _signOutPanel.Controls.Add(_lblSignOut);
+            _signOutPanel.Controls.Add(logoutIcon);
+            
+            EventHandler signOutClick = (s, e) => this.Close();
+            _signOutPanel.Click += signOutClick;
+            logoutIcon.Click += signOutClick;
+            _lblSignOut.Click += signOutClick;
+            
+            _signOutPanel.MouseEnter += (s, e) => _signOutPanel.BackColor = ColorTranslator.FromHtml("#e2e8f0");
+            _signOutPanel.MouseLeave += (s, e) => _signOutPanel.BackColor = ColorTranslator.FromHtml("#f1f5f9");
 
-            sidebarContent.Controls.Add(_btnSignOut);
+            sidebarContent.Controls.Add(_signOutPanel);
 
             _sidebar.Controls.Add(sidebarContent);
             this.Controls.Add(_sidebar);
-
 
             // --- 2. MAIN AREA ---
             System.Windows.Forms.Panel mainArea = new System.Windows.Forms.Panel 
@@ -178,138 +213,126 @@ namespace RentalSystemUI.Forms
                 Dock = DockStyle.Fill, 
                 BackColor = ColorTranslator.FromHtml("#f6f7f8") 
             };
-            
-            // -- Header --
+
+            // Header
             System.Windows.Forms.Panel header = new System.Windows.Forms.Panel 
             { 
                 Dock = DockStyle.Top, 
-                Height = 70, 
+                Height = 80, 
                 BackColor = Color.White, 
-                Padding = new Padding(32, 16, 32, 16) 
+                Padding = new Padding(32, 20, 32, 20) 
             };
-            
-            // Header Border Bottom
-            header.Controls.Add(new System.Windows.Forms.Panel 
-            { 
-                Dock = DockStyle.Bottom, 
-                Height = 1, 
-                BackColor = ColorTranslator.FromHtml("#e2e8f0") 
-            });
 
             // Page Title
             _lblPageTitle = new AntdUI.Label 
             { 
                 Text = "Dashboard Overview", 
-                Font = new Font("Segoe UI", 16, FontStyle.Bold), // MODERN FONT
-                ForeColor = ColorTranslator.FromHtml("#0f172a"), 
+                Font = new Font("Segoe UI", 20, FontStyle.Bold), 
+                ForeColor = ColorTranslator.FromHtml("#1e293b"), 
                 Dock = DockStyle.Left, 
-                AutoSize = true, 
-                Padding = new Padding(0, 10, 0, 0) 
+                AutoSize = true 
             };
             header.Controls.Add(_lblPageTitle);
 
-
-            // Right Actions Area
-            FlowLayoutPanel rightActions = new FlowLayoutPanel 
-            { 
-                Dock = DockStyle.Right, 
-                FlowDirection = FlowDirection.RightToLeft, 
-                Width = 200, 
-                Padding = new Padding(0, 5, 0, 0) 
-            };
-            
-             // --- WINDOW CONTROLS ---
-            
-            // Close Button
-            AntdUI.Button btnClose = new AntdUI.Button 
-            { 
-                IconSvg = "close", 
-                Size = new Size(40, 40), 
-                Radius = 20, 
-                Type = TTypeMini.Default, 
-                BackColor = Color.Transparent, 
-                ForeColor = Color.Gray 
-            };
-            btnClose.Click += (s, e) => Application.Exit();
-            btnClose.BackHover = Color.Red;
-            btnClose.ForeHover = Color.White;
-            rightActions.Controls.Add(btnClose);
-
-            // Maximize
-            AntdUI.Button btnMax = new AntdUI.Button { IconSvg = "border", Size = new Size(40, 40), Radius = 20, Type = TTypeMini.Default, BackColor = Color.Transparent, ForeColor = Color.Gray };
-            btnMax.Click += (s, e) => { this.WindowState = (this.WindowState == FormWindowState.Normal) ? FormWindowState.Maximized : FormWindowState.Normal; };
-            rightActions.Controls.Add(btnMax);
-
-            // Minimize
-            AntdUI.Button btnMin = new AntdUI.Button { IconSvg = "minus", Size = new Size(40, 40), Radius = 20, Type = TTypeMini.Default, BackColor = Color.Transparent, ForeColor = Color.Gray };
-            btnMin.Click += (s, e) => { this.WindowState = FormWindowState.Minimized; };
-            rightActions.Controls.Add(btnMin);
-
-            header.Controls.Add(rightActions);
             mainArea.Controls.Add(header);
 
-            // -- Content Panel --
+            // Content Panel
             _contentPanel = new System.Windows.Forms.Panel 
             { 
                 Dock = DockStyle.Fill, 
+                BackColor = ColorTranslator.FromHtml("#f6f7f8"), 
                 Padding = new Padding(24) 
             };
             mainArea.Controls.Add(_contentPanel);
 
+            // Window Control Buttons - Added to mainArea (like Form1's panel2)
+            // Minimize Button (GREEN - Success)
+            AntdUI.Button btnMin = new AntdUI.Button 
+            { 
+                Text = "--", 
+                Name = "btnMinimize",
+                Size = new Size(45, 37), 
+                Location = new Point(mainArea.Width - 100, 0),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Type = TTypeMini.Success
+            };
+            btnMin.Click += (s, e) => this.WindowState = FormWindowState.Minimized;
+            mainArea.Controls.Add(btnMin);
+            btnMin.BringToFront();
+
+            // Close Button (RED - Error)
+            AntdUI.Button btnClose = new AntdUI.Button 
+            { 
+                Text = "✕", 
+                Name = "btnClose",
+                Size = new Size(45, 37), 
+                Location = new Point(mainArea.Width - 55, 0),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Type = TTypeMini.Error
+            };
+            btnClose.Click += (s, e) => Application.Exit();
+            mainArea.Controls.Add(btnClose);
+            btnClose.BringToFront();
+
             this.Controls.Add(mainArea);
             
-            // --- Z-ORDER FIX ---
+            // Z-Order
             _sidebar.SendToBack(); 
             mainArea.BringToFront(); 
             
-            // --- Drag Support ---
+            // Drag Support
             AttachDrag(header);
             AttachDrag(_sidebar);
             AttachDrag(_lblPageTitle); 
         }
 
-        private void ToggleSidebar(AntdUI.Button toggleBtn)
+        private void ToggleSidebar()
         {
             isSidebarCollapsed = !isSidebarCollapsed;
 
             if (isSidebarCollapsed)
             {
-                _sidebar.Width = 80; // Collapsed Width
-                toggleBtn.IconSvg = "menu-unfold";
-                
-                // Hide Text Elements
+                _sidebar.Width = 70;
                 _lblName.Visible = false;
                 _lblRole.Visible = false;
-                _btnSignOut.Text = ""; 
-                _btnSignOut.Width = 45; 
-                _btnSignOut.Location = new Point(0, _btnSignOut.Location.Y); 
+
+                // Signout panel adjust
+                _signOutPanel.Width = 70;
+                foreach(Control c in _signOutPanel.Controls) {
+                    if (c is AntdUI.Label) c.Visible = false;
+                    if (c is PictureBox pb) pb.Location = new Point(25, 15);
+                }
 
                 foreach (Control pnl in _menuControls)
                 {
-                    pnl.Width = 45; 
+                    pnl.Width = 70; 
                     foreach(Control c in pnl.Controls)
                     {
-                         if(c is AntdUI.Label) c.Visible = false;
-                         if(c is PictureBox) c.Location = new Point(12, 12); 
+                        if(c is AntdUI.Label) c.Visible = false;
+                        if(c is PictureBox pb) pb.Location = new Point(25, 12); 
                     }
                 }
             }
             else
             {
-                _sidebar.Width = 250; // Expanded Width
-                toggleBtn.IconSvg = "menu-fold";
-                
+                _sidebar.Width = 250;
                 _lblName.Visible = true;
                 _lblRole.Visible = true;
-                _btnSignOut.Text = "Sign Out";
-                _btnSignOut.Width = 220; 
-                
+
+                // Signout panel adjust
+                _signOutPanel.Width = 217;
+                foreach(Control c in _signOutPanel.Controls) {
+                    if (c is AntdUI.Label) c.Visible = true;
+                    if (c is PictureBox pb) pb.Location = new Point(16, 15);
+                }
+
                 foreach (Control pnl in _menuControls)
                 {
-                    pnl.Width = 220; 
+                    pnl.Width = 220;
                     foreach(Control c in pnl.Controls)
                     {
-                         if(c is AntdUI.Label) c.Visible = true;
+                        if(c is AntdUI.Label) c.Visible = true;
+                        if(c is PictureBox pb) pb.Location = new Point(12, 12);
                     }
                 }
             }
@@ -325,18 +348,15 @@ namespace RentalSystemUI.Forms
 
         private void AddMenuButton(FlowLayoutPanel container, string text, string iconPath, bool isActive, Action onClick)
         {
-            // Custom Menu Button: Panel + PictureBox + Label
             System.Windows.Forms.Panel btnPanel = new System.Windows.Forms.Panel
             {
                 Width = 220,
                 Height = 45,
                 Margin = new Padding(0, 0, 0, 4),
-                Padding = new Padding(0), 
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand
             };
             
-            // Icon (PictureBox)
             PictureBox pb = new PictureBox
             {
                 Size = new Size(20, 20),
@@ -345,58 +365,60 @@ namespace RentalSystemUI.Forms
                 BackColor = Color.Transparent
             };
 
-            // Loading Image
             if (System.IO.File.Exists(iconPath))
             {
                 try { pb.Image = Image.FromFile(iconPath); } catch {}
             }
             else
             {
-                 pb.BackColor = Color.Silver; 
+                pb.BackColor = Color.Silver; 
             }
 
-            // Text (Label)
             AntdUI.Label lbl = new AntdUI.Label
             {
                 Text = text,
-                Font = new Font("Manrope", 10, FontStyle.Regular),
+                Font = new Font("Segoe UI", 10, FontStyle.Regular),
                 ForeColor = ColorTranslator.FromHtml("#475569"),
                 AutoSize = true,
                 Location = new Point(44, 11), 
                 BackColor = Color.Transparent
             };
 
-            // Events for Interactivity
             EventHandler clickHandler = (s, e) => onClick();
-            EventHandler enterHandler = (s, e) => btnPanel.BackColor = ColorTranslator.FromHtml("#f1f5f9");
-            EventHandler leaveHandler = (s, e) => btnPanel.BackColor = Color.Transparent;
-
             btnPanel.Click += clickHandler;
             pb.Click += clickHandler;
             lbl.Click += clickHandler;
 
-            btnPanel.MouseEnter += enterHandler;
-            pb.MouseEnter += enterHandler;
-            lbl.MouseEnter += enterHandler;
-
-            btnPanel.MouseLeave += leaveHandler;
-            pb.MouseLeave += leaveHandler;
-            lbl.MouseLeave += leaveHandler;
+            btnPanel.MouseEnter += (s, e) => btnPanel.BackColor = ColorTranslator.FromHtml("#f1f5f9");
+            btnPanel.MouseLeave += (s, e) => btnPanel.BackColor = Color.Transparent;
+            lbl.MouseEnter += (s, e) => btnPanel.BackColor = ColorTranslator.FromHtml("#f1f5f9");
+            lbl.MouseLeave += (s, e) => btnPanel.BackColor = Color.Transparent;
 
             btnPanel.Controls.Add(lbl);
             btnPanel.Controls.Add(pb);
 
+            _menuControls.Add(btnPanel);
             container.Controls.Add(btnPanel);
-             _menuControls.Add(btnPanel); 
         }
 
-        private void NavigateTo(UserControl page, string title)
+        public void NavigateTo(Form page, string title)
         {
             _contentPanel.Controls.Clear();
-            page.Dock = DockStyle.Fill;
-            _contentPanel.Controls.Add(page);
             
-            if(_lblPageTitle != null) _lblPageTitle.Text = title;
+            // Allow form to be embedded
+            page.TopLevel = false; 
+            page.FormBorderStyle = FormBorderStyle.None;
+            page.Dock = DockStyle.Fill;
+            
+            _contentPanel.Controls.Add(page);
+            page.Show(); // Important for Forms
+            
+            _lblPageTitle.Text = title;
+        }
+
+        public void NavigateToProperties()
+        {
+            NavigateTo(new MyProperties(1, this), "My Properties");
         }
     }
 }

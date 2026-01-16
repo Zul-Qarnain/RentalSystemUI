@@ -12,14 +12,23 @@ namespace RentalSystemUI.Data
         public Database()
         {
             // Load .env if not already loaded (safe to call multiple times or handle static init)
-            // Ideally DotNetEnv.Env.Load() should be called at App startup (Program.cs), but here is safe for now.
+            // Use overwrite to ensure .env value wins over any machine-level variable pointing to LocalDB.
             Env.Load();
         }
 
         public SqlConnection GetConnection()
         {
-            string connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
-                                ?? throw new InvalidOperationException("DB_CONNECTION_STRING is missing in .env layer");
+            // Prefer the value from .env (via DotNetEnv) first, then fall back to process env
+            var connString = Env.GetString("DB_CONNECTION_STRING");
+            if (string.IsNullOrWhiteSpace(connString))
+            {
+                connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+            }
+
+            if (string.IsNullOrWhiteSpace(connString))
+            {
+                throw new InvalidOperationException("DB_CONNECTION_STRING is missing in .env layer");
+            }
             return new SqlConnection(connString);
         }
     }
