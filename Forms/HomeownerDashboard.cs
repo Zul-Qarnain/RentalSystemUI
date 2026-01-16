@@ -140,9 +140,9 @@ namespace RentalSystemUI.Forms
             // Add Menu Items
             string assetsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
             
-            AddMenuButton(_menuPanel, "Dashboard", System.IO.Path.Combine(assetsPath, "dashboard.png"), true, () => NavigateTo(new DashboardHome(), "Dashboard Overview"));
-            AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => { });
-            AddMenuButton(_menuPanel, "Tenants", System.IO.Path.Combine(assetsPath, "users.png"), false, () => { });
+            AddMenuButton(_menuPanel, "Dashboard", System.IO.Path.Combine(assetsPath, "dashboard.png"), true, () => NavigateTo(new DashboardHome(this), "Dashboard Overview"));
+            AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => NavigateTo(new MyProperties(), "My Properties"));
+            AddMenuButton(_menuPanel, "Tenants", System.IO.Path.Combine(assetsPath, "users.png"), false, () => { }); // Placeholder
             AddMenuButton(_menuPanel, "Financials", System.IO.Path.Combine(assetsPath, "payment.png"), false, () => NavigateTo(new PaymentList(), "Financials"));
             AddMenuButton(_menuPanel, "Requests", System.IO.Path.Combine(assetsPath, "calendar.png"), false, () => NavigateTo(new RequestList(), "Maintenance Requests"));
             AddMenuButton(_menuPanel, "Settings", System.IO.Path.Combine(assetsPath, "settings.png"), false, () => NavigateTo(new Settings(), "Settings"));
@@ -162,7 +162,7 @@ namespace RentalSystemUI.Forms
                 BackColor = ColorTranslator.FromHtml("#f1f5f9"), 
                 ForeColor = ColorTranslator.FromHtml("#334155"), 
                 Radius = 8, 
-                Font = new Font("Manrope", 9, FontStyle.Bold) 
+                Font = new Font("Segoe UI", 9, FontStyle.Bold) // MODERN FONT
             };
             _btnSignOut.Click += (s, e) => this.Close();
 
@@ -200,13 +200,14 @@ namespace RentalSystemUI.Forms
             _lblPageTitle = new AntdUI.Label 
             { 
                 Text = "Dashboard Overview", 
-                Font = new Font("Manrope", 14, FontStyle.Bold), 
+                Font = new Font("Segoe UI", 16, FontStyle.Bold), // MODERN FONT
                 ForeColor = ColorTranslator.FromHtml("#0f172a"), 
                 Dock = DockStyle.Left, 
                 AutoSize = true, 
                 Padding = new Padding(0, 10, 0, 0) 
             };
             header.Controls.Add(_lblPageTitle);
+
 
             // Right Actions Area
             FlowLayoutPanel rightActions = new FlowLayoutPanel 
