@@ -19,9 +19,6 @@
             lblLogo = new Label();
             btnHeart = new AntdUI.Button();
             btnNotif = new AntdUI.Button();
-            btnMenuMessages = new AntdUI.Button();
-            btnMenuRentals = new AntdUI.Button();
-            btnMenuHome = new AntdUI.Button();
             pnlSidebar = new Panel();
             inputSqFt = new AntdUI.InputNumber();
             lblSqFt = new Label();
@@ -64,11 +61,7 @@
             // 
             pnlTopBar.BackColor = Color.White;
             pnlTopBar.Controls.Add(lblLogo);
-            pnlTopBar.Controls.Add(btnHeart);
-            pnlTopBar.Controls.Add(btnNotif);
-            pnlTopBar.Controls.Add(btnMenuMessages);
-            pnlTopBar.Controls.Add(btnMenuRentals);
-            pnlTopBar.Controls.Add(btnMenuHome);
+            // Right-side utility icons removed for a clean minimal header
             pnlTopBar.Dock = DockStyle.Top;
             pnlTopBar.Location = new Point(0, 0);
             pnlTopBar.Name = "pnlTopBar";
@@ -86,47 +79,7 @@
             lblLogo.TabIndex = 0;
             lblLogo.Text = "RentAll";
             // 
-            // btnHeart
-            // 
-            btnHeart.Location = new Point(1250, 25);
-            btnHeart.Name = "btnHeart";
-            btnHeart.Size = new Size(40, 32);
-            btnHeart.TabIndex = 2;
-            // 
-            // btnNotif
-            // 
-            btnNotif.Location = new Point(1200, 25);
-            btnNotif.Name = "btnNotif";
-            btnNotif.Size = new Size(40, 32);
-            btnNotif.TabIndex = 3;
-            // 
-            // btnMenuMessages
-            // 
-            btnMenuMessages.Icon = (Image)resources.GetObject("btnMenuMessages.Icon");
-            btnMenuMessages.IconSize = new Size(18, 18);
-            btnMenuMessages.Location = new Point(765, 36);
-            btnMenuMessages.Name = "btnMenuMessages";
-            btnMenuMessages.Size = new Size(120, 44);
-            btnMenuMessages.TabIndex = 4;
-            // 
-            // btnMenuRentals
-            // 
-            btnMenuRentals.Icon = (Image)resources.GetObject("btnMenuRentals.Icon");
-            btnMenuRentals.IconSize = new Size(18, 18);
-            btnMenuRentals.Location = new Point(621, 30);
-            btnMenuRentals.Name = "btnMenuRentals";
-            btnMenuRentals.Size = new Size(150, 50);
-            btnMenuRentals.TabIndex = 5;
-            // 
-            // btnMenuHome
-            // 
-            btnMenuHome.Icon = (Image)resources.GetObject("btnMenuHome.Icon");
-            btnMenuHome.IconSize = new Size(18, 18);
-            btnMenuHome.Location = new Point(524, 30);
-            btnMenuHome.Name = "btnMenuHome";
-            btnMenuHome.Size = new Size(120, 44);
-            btnMenuHome.TabIndex = 6;
-            btnMenuHome.Click += btnMenuHome_Click;
+            // btnHeart / btnNotif were part of the old top bar and are no longer used.
             // 
             // pnlSidebar
             // 
@@ -303,7 +256,7 @@
             sliderRent.Name = "sliderRent";
             sliderRent.Size = new Size(250, 30);
             sliderRent.TabIndex = 15;
-            sliderRent.Value = 40;
+            sliderRent.Value = 50000;
             // 
             // lblRentValue
             // 
@@ -313,7 +266,7 @@
             lblRentValue.Name = "lblRentValue";
             lblRentValue.Size = new Size(266, 25);
             lblRentValue.TabIndex = 16;
-            lblRentValue.Text = "$850                                $3,200";
+            lblRentValue.Text = "0                                50,000";
             // 
             // lblRentTitle
             // 
@@ -323,7 +276,7 @@
             lblRentTitle.Name = "lblRentTitle";
             lblRentTitle.Size = new Size(142, 28);
             lblRentTitle.TabIndex = 17;
-            lblRentTitle.Text = "Monthly Rent";
+            lblRentTitle.Text = "Monthly Rent (Max)";
             // 
             // btnResetFilters
             // 
@@ -489,9 +442,6 @@
         private System.Windows.Forms.Label lblLogo;
         private AntdUI.Button btnHeart;
         private AntdUI.Button btnNotif;
-        private AntdUI.Button btnMenuMessages;
-        private AntdUI.Button btnMenuRentals;
-        private AntdUI.Button btnMenuHome;
 
         private System.Windows.Forms.Panel pnlSidebar;
         private System.Windows.Forms.Label lblFilterTitle;
@@ -503,8 +453,8 @@
         private System.Windows.Forms.Label lblAmenities;
         private AntdUI.Checkbox chkAC;
         private AntdUI.Checkbox chkWasher;
-        private AntdUI.Checkbox chkPet;
-        private AntdUI.Checkbox chkParking;
+         private AntdUI.Checkbox chkPet;
+         private AntdUI.Checkbox chkParking;
 
         private System.Windows.Forms.Label lblBedroom;
         private AntdUI.Select selBedroom;

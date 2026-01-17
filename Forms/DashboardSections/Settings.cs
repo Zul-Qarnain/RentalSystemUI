@@ -2,55 +2,56 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using AntdUI;
+using RentalSystemUI.Services;
 
 namespace RentalSystemUI.Forms.DashboardSections
 {
-    public class Settings : UserControl
+    public partial class Settings : Form
     {
-        public Settings()
+        private readonly int _userId;
+        private readonly UserService _userService;
+        private UserModel? _currentUser;
+
+        public Settings(int userId = 1)
         {
-            this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
-            InitializeUI();
+            _userId = userId;
+            _userService = new UserService();
+            
+            InitializeComponent();
+            LoadUserData();
+            PopulateFields();
         }
 
-        private void InitializeUI()
+        private void LoadUserData()
         {
-            AntdUI.Label lblTitle = new AntdUI.Label { Text = "Account Settings", Font = new Font("Segoe UI", 16, FontStyle.Bold), Dock = DockStyle.Top, Height = 60, Padding = new Padding(20, 15, 0, 0) };
-            this.Controls.Add(lblTitle);
-
-            AntdUI.Panel panel = new AntdUI.Panel { Location = new Point(20, 80), Size = new Size(500, 400), Radius = 8, Shadow = 5 };
-            
-            // Profile Pic Placeholder
-            AntdUI.Avatar avatar = new AntdUI.Avatar { Text = "User", Location = new Point(210, 20), Width = 80, Height = 80 };
-            panel.Controls.Add(avatar);
-
-            int y = 120;
-            panel.Controls.Add(CreateField("Full Name", "Shihab Mahamud", y));
-            y += 70;
-            panel.Controls.Add(CreateField("Email Address", "landlord@example.com", y));
-            y += 70;
-            panel.Controls.Add(CreateField("Password", "********", y, true));
-
-            AntdUI.Button btnSave = new AntdUI.Button { Text = "Save Changes", Type = TTypeMini.Primary, Location = new Point(20, 340), Size = new Size(460, 40) };
-            btnSave.Click += (s, e) => {
-                 if (this.FindForm() is Form f) AntdUI.Message.success(f, "Settings Updated Successfully!");
-            };
-            panel.Controls.Add(btnSave);
-
-            this.Controls.Add(panel);
+            _currentUser = _userService.GetUserById(_userId);
+            if (_currentUser == null)
+            {
+                _currentUser = new UserModel { UserID=_userId, FullName="Demo User", Email="demo@example.com", Phone="01700000000" };
+            }
         }
 
-        private Control CreateField(string label, string value, int y, bool isPass = false)
+        private void PopulateFields()
         {
-            System.Windows.Forms.Panel p = new System.Windows.Forms.Panel { Location = new Point(20, y), Size = new Size(460, 60) };
-            p.Controls.Add(new AntdUI.Label { Text = label, Location = new Point(0, 0), AutoSize = true, ForeColor = Color.Gray });
-            
-            AntdUI.Input input = new AntdUI.Input { Text = value, Location = new Point(0, 25), Size = new Size(460, 35) };
-            if (isPass) input.UseSystemPasswordChar = true;
-            
-            p.Controls.Add(input);
-            return p;
+            if (_currentUser == null) return;
+            _inputName.Text = _currentUser.FullName;
+            _inputEmail.Text = _currentUser.Email;
+            _inputPhone.Text = _currentUser.Phone;
+        }
+
+        private void OnSaveProfileClick(object? sender, EventArgs e)
+        {
+             if (this.FindForm() is Form f) AntdUI.Message.success(f, "Profile updated!");
+        }
+
+        private void OnChangePasswordClick(object? sender, EventArgs e)
+        {
+             if (this.FindForm() is Form f) AntdUI.Message.success(f, "Password updated!");
+        }
+
+        private void avatar_Click(object sender, EventArgs e)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

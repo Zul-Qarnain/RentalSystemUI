@@ -22,9 +22,9 @@ namespace RentalSystemUI.Forms
         public Form1()
         {
             InitializeComponent();
-            this.Size = new Size(1280, 800);
-            this.MinimumSize = new Size(1280, 800);
-            this.MaximumSize = new Size(1280, 800);
+            this.Size = new Size(1000, 650);
+            this.MinimumSize = new Size(1000, 650);
+            this.MaximumSize = new Size(1000, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
             SetupVisuals();
 
@@ -74,12 +74,22 @@ namespace RentalSystemUI.Forms
 
             if (user != null)
             {
+                AppSession.SetUser(user);
+
                 AntdUI.Message.success(this, $"Welcome back, {user.FullName}!");
 
-                // --- OPEN SEARCH & CLOSE LOGIN PROPERLY ---
-                RentAllSearch searchForm = new RentAllSearch();
-                searchForm.FormClosed += (s, args) => this.Close(); // Kills process when closed
-                searchForm.Show();
+                Form next;
+                if (string.Equals(user.UserType, "Landlord", StringComparison.OrdinalIgnoreCase))
+                {
+                    next = new HomeownerDashboard();
+                }
+                else
+                {
+                    next = new UserDashboard(user.UserID);
+                }
+
+                next.FormClosed += (s, args) => this.Close(); // Kills process when closed
+                next.Show();
                 this.Hide();
             }
             else
@@ -279,10 +289,10 @@ namespace RentalSystemUI.Forms
             c.MouseUp += (s, e) => dragging = false;
         }
 
-        // Designer required methods
-        private void Form_MouseDown(object sender, MouseEventArgs e) { dragging = true; dragCursorPoint = Cursor.Position; dragFormPoint = this.Location; }
-        private void Form_MouseMove(object sender, MouseEventArgs e) { if (dragging) { Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint)); this.Location = Point.Add(dragFormPoint, new Size(dif)); } }
-        private void Form_MouseUp(object sender, MouseEventArgs e) { dragging = false; }
+        // Designer required methods (must exist for WinForms designer)
+        public void Form_MouseDown(object sender, MouseEventArgs e) { dragging = true; dragCursorPoint = Cursor.Position; dragFormPoint = this.Location; }
+        public void Form_MouseMove(object sender, MouseEventArgs e) { if (dragging) { Point dif = Point.Subtract(Cursor.Position, new Size(dragCursorPoint)); this.Location = Point.Add(dragFormPoint, new Size(dif)); } }
+        public void Form_MouseUp(object sender, MouseEventArgs e) { dragging = false; }
         private void label6_Click(object sender, EventArgs e) { SwitchToSignup(null, null); }
     }
 }

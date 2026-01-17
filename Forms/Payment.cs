@@ -1,44 +1,161 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
+using RentalSystemUI.Data;
+using RentalSystemUI.Services;
 
 namespace RentalSystemUI.Forms
 {
     public partial class Payment : Form
     {
-        public Payment()
+        private readonly int? _bookingId;
+        private readonly TenantService _tenantService = new TenantService();
+
+        private decimal _amount;
+
+        public Payment() : this(null)
         {
+        }
+
+        public Payment(int? bookingId)
+        {
+            _bookingId = bookingId;
+
             InitializeComponent();
             this.Size = new Size(1280, 800);
             this.MinimumSize = new Size(1280, 800);
             this.MaximumSize = new Size(1280, 800);
             this.StartPosition = FormStartPosition.CenterScreen;
             SetupUIComponents();
+
+            if (btnPay != null)
+            {
+                btnPay.Click -= BtnPay_Click;
+                btnPay.Click += BtnPay_Click;
+            }
+        }
+
+        private void BtnPay_Click(object? sender, EventArgs e)
+        {
+            if (!_bookingId.HasValue)
+            {
+                AntdUI.Message.error(this, "Missing booking.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtNumber.Text))
+            {
+                AntdUI.Message.error(this, "Please fill card holder name and card number.");
+                return;
+            }
+
+            var method = "Card";
+            var tx = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();
+
+            int paymentId = _tenantService.CreatePaymentForBooking(_bookingId.Value, _amount, method, tx);
+            if (paymentId <= 0)
+            {
+                AntdUI.Message.error(this, "Payment failed.");
+                return;
+            }
+
+            AntdUI.Message.success(this, $"Payment completed (ID: {paymentId}).");
+            Close();
         }
 
         private void SetupUIComponents()
         {
-            // FIX for 'Items' error: Try using 'Pages' which is standard for AntdUI Tabs
-            try
-            {
-                // In AntdUI, we often set tab text like this if .Items doesn't exist
-                tabMethods.Text = "Credit Card";
-            }
-            catch { }
+            try { tabMethods.Text = "Credit Card"; } catch { }
 
-            // Apply Placeholders (using Placeholder property)
             txtName.PlaceholderText = "Card Holder Name";
             txtNumber.PlaceholderText = "0000 0000 0000 0000";
             txtExpiry.PlaceholderText = "MM / YY";
             txtCVC.PlaceholderText = "123";
 
-            // Left Side: Rental Summary Breakdown
-            AddSummaryContent();
+            LoadBookingSummary();
         }
 
-        private void AddSummaryContent()
+        private void LoadBookingSummary()
         {
-            // Property Image Placeholder
+            cardSummary.Controls.Clear();
+
+            if (!_bookingId.HasValue)
+            {
+                _amount = 0;
+                AddSummaryContent("Booking", "Total Due: ৳0");
+                return;
+            }
+
+            try
+            {
+                using var conn = new Database().GetConnection();
+                conn.Open();
+
+                using var cmd = new SqlCommand(@"
+                    SELECT b.BookingID, b.TotalAmount, b.StartDate, b.EndDate, b.DurationMonths,
+                           p.Title, p.RentAmount
+                    FROM BOOKINGS b
+                    JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                    WHERE b.BookingID=@bid", conn);
+
+                cmd.Parameters.AddWithValue("@bid", _bookingId.Value);
+                using var r = cmd.ExecuteReader();
+                if (!r.Read())
+                {
+                    _amount = 0;
+                    AddSummaryContent("Booking", "Total Due: ৳0");
+                    return;
+                }
+
+                _amount = (decimal)r["TotalAmount"]; 
+                var title = r["Title"].ToString() ?? $"Booking #{_bookingId.Value}";
+                var months = r["DurationMonths"] as int? ?? 1;
+                var rent = (decimal)r["RentAmount"];
+
+                // Property Image Placeholder
+                var pic = new System.Windows.Forms.PictureBox
+                {
+                    Size = new Size(340, 180),
+                    Location = new Point(20, 20),
+                    BackColor = Color.FromArgb(235, 235, 235),
+                    SizeMode = PictureBoxSizeMode.StretchImage
+                };
+                cardSummary.Controls.Add(pic);
+
+                var lblTitle = new AntdUI.Label
+                {
+                    Text = title,
+                    Font = new Font("Segoe UI Semibold", 13),
+                    Location = new Point(20, 215),
+                    Size = new Size(340, 30)
+                };
+                cardSummary.Controls.Add(lblTitle);
+
+                var lblLine1 = new AntdUI.Label { Text = $"Rent: ৳{rent:N0} / month", Location = new Point(20, 260), Size = new Size(340, 25), ForeColor = Color.Gray };
+                var lblLine2 = new AntdUI.Label { Text = $"Duration: {months} month(s)", Location = new Point(20, 290), Size = new Size(340, 25), ForeColor = Color.Gray };
+                cardSummary.Controls.Add(lblLine1);
+                cardSummary.Controls.Add(lblLine2);
+
+                var lblTotalDue = new AntdUI.Label
+                {
+                    Text = $"Total Due: ৳{_amount:N0}",
+                    Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(22, 119, 255),
+                    Location = new Point(20, 430),
+                    Size = new Size(340, 40)
+                };
+                cardSummary.Controls.Add(lblTotalDue);
+            }
+            catch
+            {
+                _amount = 0;
+                AddSummaryContent("Booking", "Total Due: ৳0");
+            }
+        }
+
+        private void AddSummaryContent(string titleText, string totalText)
+        {
             var pic = new System.Windows.Forms.PictureBox
             {
                 Size = new Size(340, 180),
@@ -48,32 +165,18 @@ namespace RentalSystemUI.Forms
             };
             cardSummary.Controls.Add(pic);
 
-            // Property Info
             var lblTitle = new AntdUI.Label
             {
-                Text = "Sunset Apartments, Unit 4B",
+                Text = titleText,
                 Font = new Font("Segoe UI Semibold", 13),
                 Location = new Point(20, 215),
                 Size = new Size(340, 30)
             };
             cardSummary.Controls.Add(lblTitle);
 
-            // List items to match the image exactly
-            string[,] costData = { { "Base Rent", "$1,200.00" }, { "Maintenance Fee", "$50.00" }, { "Garbage Collection", "$15.00" } };
-            int y = 270;
-            for (int i = 0; i < 3; i++)
-            {
-                var lblKey = new AntdUI.Label { Text = costData[i, 0], Location = new Point(20, y), Size = new Size(180, 25), ForeColor = Color.Gray };
-                var lblVal = new AntdUI.Label { Text = costData[i, 1], Location = new Point(240, y), Size = new Size(120, 25), TextAlign = ContentAlignment.TopRight };
-                cardSummary.Controls.Add(lblKey);
-                cardSummary.Controls.Add(lblVal);
-                y += 35;
-            }
-
-            // Total Due
             var lblTotalDue = new AntdUI.Label
             {
-                Text = "Total Due: $1,265.00",
+                Text = totalText,
                 Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = Color.FromArgb(22, 119, 255),
                 Location = new Point(20, 430),
@@ -96,7 +199,6 @@ namespace RentalSystemUI.Forms
 
         private void lblNavLinks_Click(object sender, EventArgs e)
         {
-
         }
     }
 }

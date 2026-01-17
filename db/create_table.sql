@@ -1,6 +1,11 @@
--- 1. Create USERS Table
+USE HomeRentalDB;
+GO
+
+-- =========================
+-- 1. USERS
+-- =========================
 CREATE TABLE USERS (
-    UserID INT PRIMARY KEY IDENTITY(1,1),
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
     FullName NVARCHAR(255) NOT NULL,
     Email NVARCHAR(255) UNIQUE NOT NULL,
     PasswordHash NVARCHAR(MAX) NOT NULL,
@@ -10,9 +15,11 @@ CREATE TABLE USERS (
     CreatedAt DATETIME2 DEFAULT GETDATE()
 );
 
--- 2. Create PROPERTIES Table
+-- =========================
+-- 2. PROPERTIES
+-- =========================
 CREATE TABLE PROPERTIES (
-    PropertyID INT PRIMARY KEY IDENTITY(1,1),
+    PropertyID INT IDENTITY(1,1) PRIMARY KEY,
     LandlordID INT NOT NULL,
     Title NVARCHAR(255) NOT NULL,
     Description NVARCHAR(MAX),
@@ -20,22 +27,36 @@ CREATE TABLE PROPERTIES (
     City NVARCHAR(100) NOT NULL,
     RentAmount DECIMAL(18, 2) NOT NULL,
     Status NVARCHAR(20) CHECK (Status IN ('Available', 'Rented', 'Maintenance')),
+    AvailabilityStatus BIT DEFAULT 1,
+    Rooms INT,
+    Kitchen INT,
+    WashRoom INT,
+    IsPetAllowed BIT,
+    IsAC BIT,
     CreatedAt DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (LandlordID) REFERENCES USERS(UserID)
+
+    CONSTRAINT FK_PROPERTIES_USERS 
+        FOREIGN KEY (LandlordID) REFERENCES USERS(UserID)
 );
 
--- 3. Create PROPERTY_IMAGES Table
+-- =========================
+-- 3. PROPERTY_IMAGES
+-- =========================
 CREATE TABLE PROPERTY_IMAGES (
-    ImageID INT PRIMARY KEY IDENTITY(1,1),
+    ImageID INT IDENTITY(1,1) PRIMARY KEY,
     PropertyID INT NOT NULL,
     ImagePath NVARCHAR(MAX) NOT NULL,
     UploadedAt DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (PropertyID) REFERENCES PROPERTIES(PropertyID) ON DELETE CASCADE
+
+    CONSTRAINT FK_PROPERTY_IMAGES_PROPERTIES
+        FOREIGN KEY (PropertyID) REFERENCES PROPERTIES(PropertyID) ON DELETE CASCADE
 );
 
--- 4. Create BOOKINGS Table
+-- =========================
+-- 4. BOOKINGS
+-- =========================
 CREATE TABLE BOOKINGS (
-    BookingID INT PRIMARY KEY IDENTITY(1,1),
+    BookingID INT IDENTITY(1,1) PRIMARY KEY,
     PropertyID INT NOT NULL,
     TenantID INT NOT NULL,
     StartDate DATE NOT NULL,
@@ -44,18 +65,44 @@ CREATE TABLE BOOKINGS (
     TotalAmount DECIMAL(18, 2) NOT NULL,
     Status NVARCHAR(20) CHECK (Status IN ('Pending', 'Approved', 'Rejected')),
     CreatedAt DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (PropertyID) REFERENCES PROPERTIES(PropertyID),
-    FOREIGN KEY (TenantID) REFERENCES USERS(UserID)
+
+    CONSTRAINT FK_BOOKINGS_PROPERTIES 
+        FOREIGN KEY (PropertyID) REFERENCES PROPERTIES(PropertyID),
+
+    CONSTRAINT FK_BOOKINGS_USERS 
+        FOREIGN KEY (TenantID) REFERENCES USERS(UserID)
 );
 
--- 5. Create PAYMENTS Table
+-- =========================
+-- 5. PAYMENTS
+-- =========================
 CREATE TABLE PAYMENTS (
-    PaymentID INT PRIMARY KEY IDENTITY(1,1),
+    PaymentID INT IDENTITY(1,1) PRIMARY KEY,
     BookingID INT NOT NULL,
     Amount DECIMAL(18, 2) NOT NULL,
     TransactionID NVARCHAR(100) UNIQUE,
     Method NVARCHAR(20) CHECK (Method IN ('Cash', 'Bkash', 'Card')),
     Status NVARCHAR(20) CHECK (Status IN ('Verified', 'Failed')),
     PaymentDate DATETIME2 DEFAULT GETDATE(),
-    FOREIGN KEY (BookingID) REFERENCES BOOKINGS(BookingID)
+
+    CONSTRAINT FK_PAYMENTS_BOOKINGS
+        FOREIGN KEY (BookingID) REFERENCES BOOKINGS(BookingID)
+);
+
+-- =========================
+-- 6. REVIEWS
+-- =========================
+CREATE TABLE REVIEWS (
+    ReviewID INT IDENTITY(1,1) PRIMARY KEY,
+    PropertyID INT NOT NULL,
+    TenantID INT NOT NULL,
+    Rating INT CHECK (Rating BETWEEN 1 AND 5),
+    Comment NVARCHAR(MAX),
+    CreatedAt DATETIME2 DEFAULT GETDATE(),
+
+    CONSTRAINT FK_REVIEWS_PROPERTIES
+        FOREIGN KEY (PropertyID) REFERENCES PROPERTIES(PropertyID) ON DELETE CASCADE,
+
+    CONSTRAINT FK_REVIEWS_USERS
+        FOREIGN KEY (TenantID) REFERENCES USERS(UserID)
 );
