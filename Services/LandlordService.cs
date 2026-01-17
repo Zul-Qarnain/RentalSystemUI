@@ -15,22 +15,20 @@ namespace RentalSystemUI.Services
             return _repo.GetDashboardStats(landlordId);
         }
 
-        // --- REQUESTS ---
-        public List<RentalSystemUI.Models.Application> GetApplications(int landlordId)
+        // --- BOOKINGS (Requests) ---
+        public List<BookingWithProperty> GetBookings(int landlordId)
         {
-            return _repo.GetApplicationsByLandlord(landlordId);
+            return _repo.GetBookingsByLandlord(landlordId);
         }
 
-        public void ApproveApplication(int applicationId)
+        public void ApproveBooking(int bookingId)
         {
-            // Logic: Approve this one, Reject others for same property? 
-            // For now, let's just approve. Complex logic (auto-reject others) would require a transaction or separate calls.
-            _repo.UpdateApplicationStatus(applicationId, "Accepted");
+            _repo.UpdateBookingStatus(bookingId, "Approved");
         }
 
-        public void RejectApplication(int applicationId)
+        public void RejectBooking(int bookingId)
         {
-             _repo.UpdateApplicationStatus(applicationId, "Rejected");
+            _repo.UpdateBookingStatus(bookingId, "Rejected");
         }
 
         // --- PAYMENTS ---

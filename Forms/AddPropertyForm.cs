@@ -35,20 +35,89 @@ namespace RentalSystemUI.Forms
 
         private void OnUploadImagesClick(object? sender, EventArgs e)
         {
+            if (_selectedImages.Count >= 4)
+            {
+                AntdUI.Message.warn(this, "Maximum 4 images allowed!");
+                return;
+            }
+
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Multiselect = true;
                 ofd.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    if (ofd.FileNames.Length > 4)
+                    int remaining = 4 - _selectedImages.Count;
+                    var filesToAdd = ofd.FileNames.Take(remaining);
+                    
+                    foreach (var file in filesToAdd)
                     {
-                        AntdUI.Message.warn(this, "You can select a maximum of 4 images.");
-                        return;
+                        if (!_selectedImages.Contains(file))
+                            _selectedImages.Add(file);
                     }
-                    _selectedImages = new List<string>(ofd.FileNames);
-                    lblImageFileNames.Text = $"{_selectedImages.Count} file(s) selected: " + string.Join(", ", _selectedImages.Select(System.IO.Path.GetFileName));
+                    
+                    if (ofd.FileNames.Length > remaining)
+                    {
+                        AntdUI.Message.warn(this, $"Only added {remaining} images. Max 4 allowed.");
+                    }
+                    
+                    RefreshImageListUI();
                 }
+            }
+        }
+
+        private void RefreshImageListUI()
+        {
+            pnlImageList.Controls.Clear();
+            
+            for (int i = 0; i < _selectedImages.Count; i++)
+            {
+                string fileName = System.IO.Path.GetFileName(_selectedImages[i]);
+                string imagePath = _selectedImages[i]; // Capture for closure
+                
+                // Create a tag panel for each image
+                System.Windows.Forms.Panel tag = new System.Windows.Forms.Panel
+                {
+                    Height = 28,
+                    Width = 180,
+                    BackColor = Color.FromArgb(226, 232, 240),
+                    Margin = new Padding(3),
+                    Padding = new Padding(5, 3, 5, 3)
+                };
+                
+                // Image number + name
+                System.Windows.Forms.Label lbl = new System.Windows.Forms.Label
+                {
+                    Text = $"{i + 1}. {fileName}",
+                    AutoSize = false,
+                    Width = 145,
+                    Height = 22,
+                    Location = new Point(5, 3),
+                    Font = new Font("Segoe UI", 8),
+                    ForeColor = Color.FromArgb(51, 65, 85)
+                };
+                
+                // Remove button (X)
+                System.Windows.Forms.Button btnRemove = new System.Windows.Forms.Button
+                {
+                    Text = "✕",
+                    Size = new Size(22, 22),
+                    Location = new Point(152, 3),
+                    FlatStyle = FlatStyle.Flat,
+                    BackColor = Color.FromArgb(239, 68, 68),
+                    ForeColor = Color.White,
+                    Font = new Font("Segoe UI", 7, FontStyle.Bold),
+                    Cursor = Cursors.Hand
+                };
+                btnRemove.FlatAppearance.BorderSize = 0;
+                btnRemove.Click += (s, ev) => {
+                    _selectedImages.Remove(imagePath);
+                    RefreshImageListUI();
+                };
+                
+                tag.Controls.Add(lbl);
+                tag.Controls.Add(btnRemove);
+                pnlImageList.Controls.Add(tag);
             }
         }
 
@@ -81,6 +150,14 @@ namespace RentalSystemUI.Forms
             chkPet.Checked = prop.IsPetAllowed;
             chkAC.Checked = prop.IsAC;
             chkAvailability.Checked = prop.AvailabilityStatus;
+
+            // Load existing images
+            var existingImages = _service.GetPropertyImages(_propertyId.Value);
+            if (existingImages != null && existingImages.Count > 0)
+            {
+                _selectedImages = existingImages;
+                RefreshImageListUI();
+            }
         }
 
         private void OnSaveClick(object? sender, EventArgs e)
@@ -114,7 +191,8 @@ namespace RentalSystemUI.Forms
                  {
                      success = _service.UpdateProperty(
                          _propertyId.Value, txtTitle.Text, txtDescription.Text, txtAddress.Text, txtCity.Text, 
-                         rent, status, rooms, kitchen, washroom, isPet, isAc, isAvailable
+                         rent, status, rooms, kitchen, washroom, isPet, isAc, isAvailable,
+                         _selectedImages
                      );
                  }
                  else

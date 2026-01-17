@@ -100,5 +100,67 @@ namespace RentalSystemUI.Data
                 }
             }
         }
+
+        public bool ExistsByEmailExceptUser(string email, int userId)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "SELECT COUNT(*) FROM USERS WHERE Email = @email AND UserID <> @uid";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    cmd.Parameters.AddWithValue("@uid", userId);
+                    return (int)cmd.ExecuteScalar() > 0;
+                }
+            }
+        }
+
+        public bool UpdateProfile(int userId, string fullName, string email, string phone)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "UPDATE USERS SET FullName=@name, Email=@email, Phone=@phone WHERE UserID=@uid";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@name", fullName ?? "");
+                    cmd.Parameters.AddWithValue("@email", email ?? "");
+                    cmd.Parameters.AddWithValue("@phone", phone ?? "");
+                    cmd.Parameters.AddWithValue("@uid", userId);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public string? GetPasswordHash(int userId)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "SELECT PasswordHash FROM USERS WHERE UserID = @uid";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@uid", userId);
+                    var obj = cmd.ExecuteScalar();
+                    return obj == null || obj == DBNull.Value ? null : obj.ToString();
+                }
+            }
+        }
+
+        public bool UpdatePasswordByUserId(int userId, string newPasswordHash)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = "UPDATE USERS SET PasswordHash = @hash WHERE UserID = @uid";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@hash", newPasswordHash);
+                    cmd.Parameters.AddWithValue("@uid", userId);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
     }
 }

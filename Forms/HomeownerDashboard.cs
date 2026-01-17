@@ -104,23 +104,12 @@ namespace RentalSystemUI.Forms
             btnToggle.Location = new Point(0, 0);
             _profileHeader.Controls.Add(btnToggle);
 
-            AntdUI.Button avatar = new AntdUI.Button 
-            { 
-                IconSvg = "user", 
-                BackColor = Color.Gray, 
-                Size = new Size(40, 40), 
-                Location = new Point(0, 35), 
-                Radius = 20, 
-                Type = TTypeMini.Default, 
-                BorderWidth = 0 
-            };
-
             _lblName = new AntdUI.Label 
             { 
                 Text = "Rental Manager", 
-                Font = new Font("Segoe UI", 10, FontStyle.Bold), 
+                Font = new Font("Segoe UI", 12, FontStyle.Bold), 
                 ForeColor = ColorTranslator.FromHtml("#0f172a"), 
-                Location = new Point(50, 35), 
+                Location = new Point(0, 35), 
                 AutoSize = true 
             };
             
@@ -129,13 +118,12 @@ namespace RentalSystemUI.Forms
                 Text = "Admin Console", 
                 Font = new Font("Segoe UI", 8), 
                 ForeColor = ColorTranslator.FromHtml("#64748b"), 
-                Location = new Point(50, 55), 
+                Location = new Point(0, 57), 
                 AutoSize = true 
             };
             
             _profileHeader.Controls.Add(_lblRole);
             _profileHeader.Controls.Add(_lblName);
-            _profileHeader.Controls.Add(avatar);
             sidebarContent.Controls.Add(_profileHeader);
 
             // Nav Menu

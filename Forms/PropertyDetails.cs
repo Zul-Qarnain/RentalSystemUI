@@ -15,6 +15,7 @@ namespace RentalSystemUI.Forms
     {
         private int _propertyId;
         private PropertyService _propService = new PropertyService();
+        private readonly TenantService _tenantService = new TenantService();
 
         // --- CUSTOM EVENT: Tell parent to close me ---
         public event EventHandler? BackRequested;
@@ -88,7 +89,34 @@ namespace RentalSystemUI.Forms
 
         private void btnBookNow_Click(object sender, EventArgs e)
         {
-            AntdUI.Message.success(this, "Booking Request Sent!");
+            var user = AppSession.CurrentUser;
+            if (user == null)
+            {
+                AntdUI.Message.error(this, "Please login again.");
+                return;
+            }
+            if (!string.Equals(user.UserType, "Tenant", StringComparison.OrdinalIgnoreCase))
+            {
+                AntdUI.Message.error(this, "Only tenants can book a property.");
+                return;
+            }
+
+            DateTime start = dateCheckIn.Value is DateTime d1 ? d1 : DateTime.Today;
+            DateTime end = dateCheckOut.Value is DateTime d2 ? d2 : DateTime.Today.AddMonths(1);
+            if (end <= start)
+            {
+                AntdUI.Message.error(this, "Check-out must be after check-in.");
+                return;
+            }
+
+            int bookingId = _tenantService.CreateBooking(user.UserID, _propertyId, start, end);
+            if (bookingId <= 0)
+            {
+                AntdUI.Message.error(this, "Could not create booking. Please try again.");
+                return;
+            }
+
+            AntdUI.Message.success(this, $"Booking request sent (ID: {bookingId}). Waiting for homeowner approval.");
         }
 
         private void btnClose_Click(object sender, EventArgs e)

@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using RentalSystemUI.Data;
+using BCrypt.Net;
 
 namespace RentalSystemUI.Services
 {
@@ -10,6 +12,7 @@ namespace RentalSystemUI.Services
     public class UserService
     {
         private readonly string _connectionString;
+        private readonly UserRepository _repo = new UserRepository();
 
         public UserService()
         {
@@ -141,6 +144,66 @@ namespace RentalSystemUI.Services
             catch
             {
                 DatabaseState.MarkFailed();
+                return false;
+            }
+        }
+
+        public bool UpdateProfileInfo(int userId, string fullName, string email, string phone, out string error)
+        {
+            error = string.Empty;
+            if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email))
+            {
+                error = "Name and email are required.";
+                return false;
+            }
+
+            if (_repo.ExistsByEmailExceptUser(email.Trim(), userId))
+            {
+                error = "This email is already used by another user.";
+                return false;
+            }
+
+            try
+            {
+                return _repo.UpdateProfile(userId, fullName.Trim(), email.Trim(), phone?.Trim() ?? "");
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                return false;
+            }
+        }
+
+        public bool ChangePasswordPlain(int userId, string currentPasswordPlain, string newPasswordPlain, out string error)
+        {
+            error = string.Empty;
+            if (string.IsNullOrWhiteSpace(currentPasswordPlain) || string.IsNullOrWhiteSpace(newPasswordPlain))
+            {
+                error = "Please fill both current and new password.";
+                return false;
+            }
+
+            if (newPasswordPlain.Trim().Length < 6)
+            {
+                error = "New password must be at least 6 characters.";
+                return false;
+            }
+
+            try
+            {
+                var hash = _repo.GetPasswordHash(userId);
+                if (string.IsNullOrWhiteSpace(hash) || !BCrypt.Net.BCrypt.Verify(currentPasswordPlain, hash))
+                {
+                    error = "Current password is incorrect.";
+                    return false;
+                }
+
+                var newHash = BCrypt.Net.BCrypt.HashPassword(newPasswordPlain);
+                return _repo.UpdatePasswordByUserId(userId, newHash);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
                 return false;
             }
         }

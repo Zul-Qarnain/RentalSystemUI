@@ -7,21 +7,21 @@ namespace RentalSystemUI.Data
 {
     public class LandlordRepository : Database
     {
-        // --- REQUESTS ---
-        public List<RentalSystemUI.Models.Application> GetApplicationsByLandlord(int landlordId)
+        // --- BOOKINGS (Requests) ---
+        public List<BookingWithProperty> GetBookingsByLandlord(int landlordId)
         {
-            var list = new List<RentalSystemUI.Models.Application>();
+            var list = new List<BookingWithProperty>();
             using (var conn = GetConnection())
             {
                 conn.Open();
-                // Join with Properties to check LandlordID
                 string query = @"
-                    SELECT a.*, u.FullName as TenantName, p.Title as PropertyTitle
-                    FROM APPLICATIONS a
-                    JOIN PROPERTIES p ON a.PropertyID = p.PropertyID
-                    JOIN USERS u ON a.TenantID = u.UserID
+                    SELECT b.*, u.FullName as TenantName,
+                           p.Title as PropertyTitle, p.Address, p.City, p.RentAmount
+                    FROM BOOKINGS b
+                    JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                    JOIN USERS u ON b.TenantID = u.UserID
                     WHERE p.LandlordID = @lid
-                    ORDER BY a.ApplicationDate DESC";
+                    ORDER BY b.CreatedAt DESC";
 
                 using (var cmd = new SqlCommand(query, conn))
                 {
@@ -30,16 +30,21 @@ namespace RentalSystemUI.Data
                     {
                         while (reader.Read())
                         {
-                            list.Add(new RentalSystemUI.Models.Application
+                            list.Add(new BookingWithProperty
                             {
-                                ApplicationID = (int)reader["ApplicationID"],
+                                BookingID = (int)reader["BookingID"],
                                 PropertyID = (int)reader["PropertyID"],
                                 TenantID = (int)reader["TenantID"],
-                                ApplicationDate = (DateTime)reader["ApplicationDate"],
+                                StartDate = (DateTime)reader["StartDate"],
+                                EndDate = (DateTime)reader["EndDate"],
+                                DurationMonths = reader["DurationMonths"] as int?,
+                                TotalAmount = (decimal)reader["TotalAmount"],
                                 Status = reader["Status"].ToString() ?? "Pending",
-                                Message = reader["Message"].ToString() ?? "",
+                                CreatedAt = (DateTime)reader["CreatedAt"],
                                 TenantName = reader["TenantName"].ToString() ?? "",
-                                PropertyTitle = reader["PropertyTitle"].ToString() ?? ""
+                                PropertyTitle = reader["PropertyTitle"].ToString() ?? "",
+                                PropertyAddress = $"{reader["Address"]}, {reader["City"]}",
+                                MonthlyRent = (decimal)reader["RentAmount"]
                             });
                         }
                     }
@@ -48,42 +53,40 @@ namespace RentalSystemUI.Data
             return list;
         }
 
-        public void UpdateApplicationStatus(int appId, string status)
+        public void UpdateBookingStatus(int bookingId, string status)
         {
             using (var conn = GetConnection())
             {
                 conn.Open();
-                
-                if (status == "Accepted") 
+
+                // If approving a booking, reject other pending bookings for same property
+                if (status == "Approved")
                 {
-                    // 1. Get PropertyID for this application
                     int propId = 0;
-                    using (var cmdGet = new SqlCommand("SELECT PropertyID FROM APPLICATIONS WHERE ApplicationID = @id", conn))
+                    using (var cmdGet = new SqlCommand("SELECT PropertyID FROM BOOKINGS WHERE BookingID = @id", conn))
                     {
-                        cmdGet.Parameters.AddWithValue("@id", appId);
+                        cmdGet.Parameters.AddWithValue("@id", bookingId);
                         object res = cmdGet.ExecuteScalar();
                         if (res != null) propId = (int)res;
                     }
 
-                    // 2. Reject all OTHER pending applications for this property
                     if (propId > 0)
                     {
-                        string rejectQuery = "UPDATE APPLICATIONS SET Status = 'Rejected' WHERE PropertyID = @pid AND ApplicationID != @id AND Status = 'Pending'";
+                        string rejectQuery = "UPDATE BOOKINGS SET Status='Rejected' WHERE PropertyID=@pid AND BookingID<>@id AND Status='Pending'";
                         using (var cmdReject = new SqlCommand(rejectQuery, conn))
                         {
                             cmdReject.Parameters.AddWithValue("@pid", propId);
-                            cmdReject.Parameters.AddWithValue("@id", appId);
+                            cmdReject.Parameters.AddWithValue("@id", bookingId);
                             cmdReject.ExecuteNonQuery();
                         }
                     }
                 }
 
-                // 3. Update the target application
-                string query = "UPDATE APPLICATIONS SET Status = @status WHERE ApplicationID = @id";
+                string query = "UPDATE BOOKINGS SET Status = @status WHERE BookingID = @id";
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@status", status);
-                    cmd.Parameters.AddWithValue("@id", appId);
+                    cmd.Parameters.AddWithValue("@id", bookingId);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -97,10 +100,12 @@ namespace RentalSystemUI.Data
             {
                 conn.Open();
                 string query = @"
-                    SELECT pay.*, u.FullName as TenantName, p.Title as PropertyTitle
+                    SELECT pay.PaymentID, pay.BookingID, pay.Amount, pay.TransactionID, pay.Method, pay.Status, pay.PaymentDate,
+                           u.FullName as TenantName, p.Title as PropertyTitle
                     FROM PAYMENTS pay
-                    JOIN PROPERTIES p ON pay.PropertyID = p.PropertyID
-                    JOIN USERS u ON pay.TenantID = u.UserID
+                    JOIN BOOKINGS b ON pay.BookingID = b.BookingID
+                    JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                    JOIN USERS u ON b.TenantID = u.UserID
                     WHERE p.LandlordID = @lid
                     ORDER BY pay.PaymentDate DESC";
 
@@ -114,14 +119,12 @@ namespace RentalSystemUI.Data
                             list.Add(new Payment
                             {
                                 PaymentID = (int)reader["PaymentID"],
-                                TenantID = (int)reader["TenantID"],
-                                PropertyID = (int)reader["PropertyID"],
+                                BookingID = (int)reader["BookingID"],
                                 Amount = (decimal)reader["Amount"],
                                 PaymentDate = reader["PaymentDate"] as DateTime?,
-                                DueDate = (DateTime)reader["DueDate"],
-                                Status = reader["Status"].ToString() ?? "Pending",
+                                Status = reader["Status"].ToString() ?? "Verified",
                                 TransactionID = reader["TransactionID"].ToString() ?? "",
-                                PaymentMethod = reader["PaymentMethod"].ToString() ?? "",
+                                PaymentMethod = reader["Method"].ToString() ?? "",
                                 TenantName = reader["TenantName"].ToString() ?? "",
                                 PropertyTitle = reader["PropertyTitle"].ToString() ?? ""
                             });
@@ -200,18 +203,25 @@ namespace RentalSystemUI.Data
                 int props = (int)new SqlCommand(q1, conn) { Parameters = { new SqlParameter("@lid", landlordId) } }.ExecuteScalar();
 
                 // 2. Pending Reqs
-                string q2 = @"SELECT COUNT(*) FROM APPLICATIONS a JOIN PROPERTIES p ON a.PropertyID = p.PropertyID 
-                              WHERE p.LandlordID = @lid AND a.Status = 'Pending'";
+                string q2 = @"SELECT COUNT(*) FROM BOOKINGS b JOIN PROPERTIES p ON b.PropertyID = p.PropertyID 
+                              WHERE p.LandlordID = @lid AND b.Status = 'Pending'";
                 int reqs = (int)new SqlCommand(q2, conn) { Parameters = { new SqlParameter("@lid", landlordId) } }.ExecuteScalar();
 
                 // 3. Monthly Earnings (This month)
-                string q3 = @"SELECT ISNULL(SUM(Amount),0) FROM PAYMENTS pay JOIN PROPERTIES p ON pay.PropertyID = p.PropertyID
-                              WHERE p.LandlordID = @lid AND pay.Status = 'Verified' AND MONTH(PaymentDate) = MONTH(GETDATE())";
+                string q3 = @"SELECT ISNULL(SUM(pay.Amount),0)
+                              FROM PAYMENTS pay
+                              JOIN BOOKINGS b ON pay.BookingID = b.BookingID
+                              JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                              WHERE p.LandlordID = @lid AND pay.Status = 'Verified' AND MONTH(pay.PaymentDate) = MONTH(GETDATE())";
                 decimal earnings = (decimal)new SqlCommand(q3, conn) { Parameters = { new SqlParameter("@lid", landlordId) } }.ExecuteScalar();
 
                 // 4. Unpaid
-                string q4 = @"SELECT COUNT(*) FROM PAYMENTS pay JOIN PROPERTIES p ON pay.PropertyID = p.PropertyID
-                              WHERE p.LandlordID = @lid AND pay.Status IN ('Pending', 'Overdue')";
+                // Unpaid = Approved bookings that have no payment recorded
+                string q4 = @"SELECT COUNT(*)
+                              FROM BOOKINGS b
+                              JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                              WHERE p.LandlordID=@lid AND b.Status='Approved'
+                                AND NOT EXISTS (SELECT 1 FROM PAYMENTS pay WHERE pay.BookingID = b.BookingID AND pay.Status='Verified')";
                 int unpaid = (int)new SqlCommand(q4, conn) { Parameters = { new SqlParameter("@lid", landlordId) } }.ExecuteScalar();
 
                 return (props, reqs, earnings, unpaid);

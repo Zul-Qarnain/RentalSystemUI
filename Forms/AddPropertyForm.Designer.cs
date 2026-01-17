@@ -167,26 +167,37 @@ namespace RentalSystemUI.Forms
             this.chkAvailability.Size = new System.Drawing.Size(150, 30);
             this.chkAvailability.Checked = true;
 
-            // Image Upload Section
-            this.lblImages = new AntdUI.Label { Text = "Property Images (Max 4)", Location = new System.Drawing.Point(30, 340), Size = new System.Drawing.Size(200, 25), Font = lblFont };
-            this.btnUploadImages = new AntdUI.Button { Text = "Upload Images", Type = AntdUI.TTypeMini.Default, Location = new System.Drawing.Point(30, 370), Size = new System.Drawing.Size(150, 40), IconSvg = "cloud-upload" };
-            this.lblImageFileNames = new AntdUI.Label { Text = "No file chosen", Location = new System.Drawing.Point(190, 370), Size = new System.Drawing.Size(300, 40), Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic), ForeColor = System.Drawing.Color.Gray, AutoEllipsis = true };
+            // Image Upload Section - Bottom Left
+            this.lblImages = new AntdUI.Label { Text = "Property Images (Max 4)", Location = new System.Drawing.Point(30, 350), Size = new System.Drawing.Size(200, 25), Font = lblFont };
+            this.btnUploadImages = new AntdUI.Button { Text = "+ Add Images", Type = AntdUI.TTypeMini.Primary, Location = new System.Drawing.Point(30, 380), Size = new System.Drawing.Size(130, 35) };
+            
+            // Image List Panel - Shows selected images with remove buttons
+            this.pnlImageList = new System.Windows.Forms.FlowLayoutPanel 
+            { 
+                Location = new System.Drawing.Point(30, 420), 
+                Size = new System.Drawing.Size(350, 100), 
+                AutoScroll = true,
+                FlowDirection = System.Windows.Forms.FlowDirection.TopDown,
+                WrapContents = false,
+                BackColor = System.Drawing.Color.FromArgb(248, 250, 252),
+                BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+            };
 
-            // Buttons
+            // Buttons - Bottom Right
             this.btnSave.Text = "Save Property";
             this.btnSave.Type = AntdUI.TTypeMini.Primary;
-            this.btnSave.Location = new System.Drawing.Point(560, 440);
+            this.btnSave.Location = new System.Drawing.Point(560, 480);
             this.btnSave.Size = new System.Drawing.Size(220, 45);
             this.btnSave.BackColor = System.Drawing.Color.Blue;
             this.btnSave.ForeColor = System.Drawing.Color.White;
 
             this.btnCancel.Text = "Cancel";
             this.btnCancel.Type = AntdUI.TTypeMini.Default;
-            this.btnCancel.Location = new System.Drawing.Point(430, 440);
+            this.btnCancel.Location = new System.Drawing.Point(430, 480);
             this.btnCancel.Size = new System.Drawing.Size(100, 45);
 
-            // Form
-            this.ClientSize = new System.Drawing.Size(820, 520); // Widened Form
+            // Form - Increased height
+            this.ClientSize = new System.Drawing.Size(820, 550);
             this.Controls.Add(this.lblTitle); this.Controls.Add(this.txtTitle);
             this.Controls.Add(this.lblAddress); this.Controls.Add(this.txtAddress);
             this.Controls.Add(this.lblCity); this.Controls.Add(this.txtCity);
@@ -201,7 +212,7 @@ namespace RentalSystemUI.Forms
             this.Controls.Add(this.chkAvailability);
             this.Controls.Add(this.lblImages);
             this.Controls.Add(this.btnUploadImages);
-            this.Controls.Add(this.lblImageFileNames);
+            this.Controls.Add(this.pnlImageList);
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnCancel);
 
@@ -229,7 +240,8 @@ namespace RentalSystemUI.Forms
         public AntdUI.Button btnSave, btnCancel;
         
         // Image Upload Controls
-        public AntdUI.Label lblImages, lblImageFileNames;
+        public AntdUI.Label lblImages;
         public AntdUI.Button btnUploadImages;
+        public System.Windows.Forms.FlowLayoutPanel pnlImageList;
     }
 }

@@ -48,5 +48,10 @@ namespace RentalSystemUI.Forms.DashboardSections
         {
              if (this.FindForm() is Form f) AntdUI.Message.success(f, "Password updated!");
         }
+
+        private void avatar_Click(object sender, EventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

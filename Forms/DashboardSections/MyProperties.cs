@@ -11,16 +11,28 @@ namespace RentalSystemUI.Forms.DashboardSections
     {
         private readonly int _landlordId;
         private readonly PropertyService _propertyService;
+        private bool _isTenant; // New flag
         private HomeownerDashboard? _parent;
 
-        public MyProperties(int landlordId = 1, HomeownerDashboard? parent = null)
+        public MyProperties(int landlordId = 1, HomeownerDashboard? parent = null, bool isTenant = false)
         {
             _landlordId = landlordId;
             _parent = parent;
+            _isTenant = isTenant;
             _propertyService = new PropertyService();
             
             InitializeComponent();
             
+            if (_isTenant)
+            {
+                // Hide Add Property button if it exists (assuming it is on the form)
+                // Use Find or try/catch if not sure of the name, but usually it is btnAddProperty
+                try { 
+                    Control[] matches = this.Controls.Find("btnAddProperty", true);
+                    if (matches.Length > 0) matches[0].Visible = false;
+                } catch {}
+            }
+
             // Re-attach event handlers that Designer can't easily inline if they were lambdas
             _propertiesFlow.Resize += (s, e) => RecalculatePadding();
             
@@ -51,11 +63,22 @@ namespace RentalSystemUI.Forms.DashboardSections
             if (_propertiesFlow == null) return;
             _propertiesFlow.Controls.Clear();
 
-            List<PropertyModel> properties = _propertyService.GetPropertiesByLandlord(_landlordId);
+            List<PropertyModel> properties;
+            if (_isTenant)
+                properties = _propertyService.GetRentedProperties(_landlordId); // _landlordId is used as UserId
+            else
+                properties = _propertyService.GetPropertiesByLandlord(AppSession.CurrentUser?.UserID ?? _landlordId);
 
             if (properties.Count == 0)
             {
-                AntdUI.Label lblEmpty = new AntdUI.Label{ Text = "No properties found.", Font = Styles.SubHeader, ForeColor = Styles.TextGray, AutoSize = true, Padding = new Padding(20) };
+                AntdUI.Label lblEmpty = new AntdUI.Label
+                {
+                    Text = _isTenant ? "You have no accepted rentals." : "You have not added any properties yet.",
+                    Font = Styles.SubHeader,
+                    ForeColor = Styles.TextGray,
+                    AutoSize = true,
+                    Padding = new Padding(20)
+                };
                 _propertiesFlow.Controls.Add(lblEmpty);
                 return;
             }
@@ -79,7 +102,7 @@ namespace RentalSystemUI.Forms.DashboardSections
                 Shadow = 10, 
                 Margin = new Padding(0, 0, 20, 25) 
             };
-            
+
             // Image Area
             PictureBox pic = new PictureBox 
             { 
@@ -88,12 +111,25 @@ namespace RentalSystemUI.Forms.DashboardSections
                 BackColor = Styles.LightBlue, 
                 SizeMode = PictureBoxSizeMode.StretchImage 
             };
-            
+
             if (!string.IsNullOrEmpty(property.FirstImagePath) && System.IO.File.Exists(property.FirstImagePath))
             {
                 try { pic.Image = Image.FromFile(property.FirstImagePath); } catch { }
             }
-            
+            else
+            {
+                // Placeholder when no DB image exists
+                try
+                {
+                    var placeholder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "placeholder.png");
+                    if (System.IO.File.Exists(placeholder))
+                    {
+                        pic.Image = Image.FromFile(placeholder);
+                    }
+                }
+                catch { }
+            }
+
             // Status Badge
             AntdUI.Button badge = new AntdUI.Button 
             { 
@@ -111,18 +147,18 @@ namespace RentalSystemUI.Forms.DashboardSections
             else { badge.ForeColor = Styles.OrangeTxt; badge.BackColor = Styles.OrangeBg; }
 
             pic.Controls.Add(badge); 
-            
+
             // Content Area
             int contentY = 190;
-            
+
             AntdUI.Label lblTitle = new AntdUI.Label { Text = property.Title, Font = Styles.CardTitle, ForeColor = Styles.DarkBlue, Location = new Point(20, contentY), AutoSize = true };
             AntdUI.Label lblPrice = new AntdUI.Label { Text = $"${property.RentAmount:N0}", Font = Styles.Bold, ForeColor = Styles.Blue, Location = new Point(240, contentY + 2), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             AntdUI.Label lblAddr = new AntdUI.Label { Text = $"{property.Address}", Font = Styles.Normal, ForeColor = Styles.TextGray, Location = new Point(20, contentY + 35), AutoSize = true };
-            
+
             // Manage Button
             AntdUI.Button btnManage = new AntdUI.Button 
             { 
-                Text = "Manage Property", 
+                Text = "View Property", 
                 Type = TTypeMini.Default, 
                 Ghost = true,
                 ForeColor = Styles.Blue,
@@ -138,9 +174,9 @@ namespace RentalSystemUI.Forms.DashboardSections
             card.Controls.Add(lblAddr);
             card.Controls.Add(lblPrice);
             card.Controls.Add(lblTitle);
-            card.Controls.Add(badge); 
+            card.Controls.Add(badge);
             card.Controls.Add(pic);
-            
+
             badge.Location = new Point(20, 20);
             badge.BringToFront();
 
@@ -160,11 +196,24 @@ namespace RentalSystemUI.Forms.DashboardSections
 
         private void OnManagePropertyClick(int propertyId)
         {
-            using (var form = new RentalSystemUI.Forms.AddPropertyForm(_landlordId, propertyId))
+            if (_isTenant)
             {
-                if (form.ShowDialog() == DialogResult.OK)
+                // For Tenant: Open Details View (Read Only)
+                // We need to find the parent dashboard or just open details
+                // Since MyProperties is inside UserDashboard, we can try to find it
+                // Or for simplicity, launch PropertyDetails form directly for now
+                var details = new RentalSystemUI.Forms.PropertyDetails(propertyId);
+                details.ShowDialog();
+            }
+            else
+            {
+                // For Landlord: Edit Mode
+                using (var form = new RentalSystemUI.Forms.AddPropertyForm(_landlordId, propertyId))
                 {
-                    LoadProperties();
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadProperties();
+                    }
                 }
             }
         }

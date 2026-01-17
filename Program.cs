@@ -37,7 +37,9 @@ namespace RentalSystemUI
                 }
 
                 // Run the App
-                Application.Run(new HomeownerDashboard());
+                //Application.Run(new HomeownerDashboard());
+                //Application.Run(new UserDashboard(1));
+               Application.Run(new Form1());
             }
             catch (Exception ex)
             {
