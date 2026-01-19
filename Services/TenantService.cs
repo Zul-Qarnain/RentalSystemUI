@@ -62,5 +62,20 @@ namespace RentalSystemUI.Services
                 unpaid.Sum(p => p.Amount)
             );
         }
+
+        public List<Review> GetReviewsByTenant(int tenantId)
+        {
+            return _repo.GetReviewsByTenant(tenantId);
+        }
+
+        public bool CreateReview(int propertyId, int tenantId, int rating, string comment)
+        {
+            return _repo.CreateReview(propertyId, tenantId, rating, comment);
+        }
+
+        public bool UpdateReview(int reviewId, int rating, string comment)
+        {
+            return _repo.UpdateReview(reviewId, rating, comment);
+        }
     }
 }

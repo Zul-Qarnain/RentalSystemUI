@@ -13,6 +13,10 @@ namespace RentalSystemUI.Forms
         private readonly TenantService _tenantService = new TenantService();
 
         private decimal _amount;
+        private int _months;
+        private decimal _monthlyRent;
+        private string _propertyTitle = string.Empty;
+        private string _ownerPhone = string.Empty;
 
         public Payment() : this(null)
         {
@@ -23,20 +27,41 @@ namespace RentalSystemUI.Forms
             _bookingId = bookingId;
 
             InitializeComponent();
-            this.Size = new Size(1280, 800);
-            this.MinimumSize = new Size(1280, 800);
-            this.MaximumSize = new Size(1280, 800);
-            this.StartPosition = FormStartPosition.CenterScreen;
+            Size = new Size(1100, 800);
+            MinimumSize = new Size(1100, 800);
+            MaximumSize = new Size(1100, 800);
+            StartPosition = FormStartPosition.CenterScreen;
+
             SetupUIComponents();
 
-            if (btnPay != null)
+            if (btnConfirm != null)
             {
-                btnPay.Click -= BtnPay_Click;
-                btnPay.Click += BtnPay_Click;
+                btnConfirm.Click -= BtnConfirm_Click;
+                btnConfirm.Click += BtnConfirm_Click;
             }
+
+            if (btnCancel != null)
+            {
+                btnCancel.Click += (s, e) => Close();
+            }
+
+            if (btnClose != null)
+            {
+                btnClose.Click += (s, e) => Close();
+            }
+
+            // Default method: Mobile Banking
+            try
+            {
+                if (btnMobileBanking != null)
+                {
+                    btnMobileBanking.Type = AntdUI.TTypeMini.Primary;
+                }
+            }
+            catch { }
         }
 
-        private void BtnPay_Click(object? sender, EventArgs e)
+        private void BtnConfirm_Click(object? sender, EventArgs e)
         {
             if (!_bookingId.HasValue)
             {
@@ -44,46 +69,65 @@ namespace RentalSystemUI.Forms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtName.Text) || string.IsNullOrWhiteSpace(txtNumber.Text))
+            var method = (selMobileMethod?.Text ?? string.Empty).Trim();
+            var senderPhone = (inputSenderPhone?.Text ?? string.Empty).Trim();
+            var trxId = (inputTrxId?.Text ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(method))
             {
-                AntdUI.Message.error(this, "Please fill card holder name and card number.");
+                AntdUI.Message.error(this, "Select Bkash or Nagad.");
                 return;
             }
 
-            var method = "Card";
-            var tx = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpperInvariant();
+            if (string.IsNullOrWhiteSpace(senderPhone))
+            {
+                AntdUI.Message.error(this, "Sender phone number is required.");
+                return;
+            }
 
-            int paymentId = _tenantService.CreatePaymentForBooking(_bookingId.Value, _amount, method, tx);
+            if (string.IsNullOrWhiteSpace(trxId))
+            {
+                AntdUI.Message.error(this, "Transaction ID is required.");
+                return;
+            }
+
+            // Keep existing payment saving logic: uses TenantService.CreatePaymentForBooking
+            // Map mobile method + trx id into existing parameters.
+            int paymentId = _tenantService.CreatePaymentForBooking(_bookingId.Value, _amount, method, trxId);
             if (paymentId <= 0)
             {
                 AntdUI.Message.error(this, "Payment failed.");
                 return;
             }
 
-            AntdUI.Message.success(this, $"Payment completed (ID: {paymentId}).");
+            AntdUI.Message.success(this, $"Payment submitted (ID: {paymentId}).");
             Close();
         }
 
         private void SetupUIComponents()
         {
-            try { tabMethods.Text = "Credit Card"; } catch { }
+            try { lblLogo.Text = "Payment"; } catch { }
 
-            txtName.PlaceholderText = "Card Holder Name";
-            txtNumber.PlaceholderText = "0000 0000 0000 0000";
-            txtExpiry.PlaceholderText = "MM / YY";
-            txtCVC.PlaceholderText = "123";
+            try
+            {
+                inputSenderPhone.PlaceholderText = "01XXXXXXXXX";
+                inputTrxId.PlaceholderText = "Transaction ID";
+            }
+            catch { }
 
             LoadBookingSummary();
         }
 
         private void LoadBookingSummary()
         {
-            cardSummary.Controls.Clear();
-
             if (!_bookingId.HasValue)
             {
                 _amount = 0;
-                AddSummaryContent("Booking", "Total Due: ৳0");
+                _months = 0;
+                _monthlyRent = 0;
+                _propertyTitle = "Booking";
+                _ownerPhone = "";
+                UpdateSummaryUi();
                 return;
             }
 
@@ -93,96 +137,61 @@ namespace RentalSystemUI.Forms
                 conn.Open();
 
                 using var cmd = new SqlCommand(@"
-                    SELECT b.BookingID, b.TotalAmount, b.StartDate, b.EndDate, b.DurationMonths,
-                           p.Title, p.RentAmount
+                    SELECT b.BookingID, b.TotalAmount, b.DurationMonths,
+                           p.Title, p.RentAmount, p.LandlordID,
+                           u.Phone as OwnerPhone
                     FROM BOOKINGS b
                     JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                    JOIN USERS u ON p.LandlordID = u.UserID
                     WHERE b.BookingID=@bid", conn);
 
                 cmd.Parameters.AddWithValue("@bid", _bookingId.Value);
+
                 using var r = cmd.ExecuteReader();
                 if (!r.Read())
                 {
                     _amount = 0;
-                    AddSummaryContent("Booking", "Total Due: ৳0");
+                    _months = 0;
+                    _monthlyRent = 0;
+                    _propertyTitle = $"Booking #{_bookingId.Value}";
+                    _ownerPhone = "";
+                    UpdateSummaryUi();
                     return;
                 }
 
-                _amount = (decimal)r["TotalAmount"]; 
-                var title = r["Title"].ToString() ?? $"Booking #{_bookingId.Value}";
-                var months = r["DurationMonths"] as int? ?? 1;
-                var rent = (decimal)r["RentAmount"];
+                _amount = (decimal)r["TotalAmount"];
+                _months = r["DurationMonths"] as int? ?? 1;
+                _propertyTitle = r["Title"].ToString() ?? $"Booking #{_bookingId.Value}";
+                _monthlyRent = (decimal)r["RentAmount"];
+                _ownerPhone = r["OwnerPhone"].ToString() ?? string.Empty;
 
-                // Property Image Placeholder
-                var pic = new System.Windows.Forms.PictureBox
-                {
-                    Size = new Size(340, 180),
-                    Location = new Point(20, 20),
-                    BackColor = Color.FromArgb(235, 235, 235),
-                    SizeMode = PictureBoxSizeMode.StretchImage
-                };
-                cardSummary.Controls.Add(pic);
-
-                var lblTitle = new AntdUI.Label
-                {
-                    Text = title,
-                    Font = new Font("Segoe UI Semibold", 13),
-                    Location = new Point(20, 215),
-                    Size = new Size(340, 30)
-                };
-                cardSummary.Controls.Add(lblTitle);
-
-                var lblLine1 = new AntdUI.Label { Text = $"Rent: ৳{rent:N0} / month", Location = new Point(20, 260), Size = new Size(340, 25), ForeColor = Color.Gray };
-                var lblLine2 = new AntdUI.Label { Text = $"Duration: {months} month(s)", Location = new Point(20, 290), Size = new Size(340, 25), ForeColor = Color.Gray };
-                cardSummary.Controls.Add(lblLine1);
-                cardSummary.Controls.Add(lblLine2);
-
-                var lblTotalDue = new AntdUI.Label
-                {
-                    Text = $"Total Due: ৳{_amount:N0}",
-                    Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                    ForeColor = Color.FromArgb(22, 119, 255),
-                    Location = new Point(20, 430),
-                    Size = new Size(340, 40)
-                };
-                cardSummary.Controls.Add(lblTotalDue);
+                UpdateSummaryUi();
             }
             catch
             {
                 _amount = 0;
-                AddSummaryContent("Booking", "Total Due: ৳0");
+                _months = 0;
+                _monthlyRent = 0;
+                _propertyTitle = $"Booking #{_bookingId.Value}";
+                _ownerPhone = "";
+                UpdateSummaryUi();
             }
         }
 
-        private void AddSummaryContent(string titleText, string totalText)
+        private void UpdateSummaryUi()
         {
-            var pic = new System.Windows.Forms.PictureBox
+            try { lblPropertyTitle.Text = _propertyTitle; } catch { }
+            try { lblMonthlyRent.Text = $"Monthly Rent: ৳{_monthlyRent:N0}"; } catch { }
+            try { lblDuration.Text = $"Duration: {_months} month(s)"; } catch { }
+            try { lblTotal.Text = $"Total: ৳{_amount:N0}"; } catch { }
+            try
             {
-                Size = new Size(340, 180),
-                Location = new Point(20, 20),
-                BackColor = Color.FromArgb(235, 235, 235),
-                SizeMode = PictureBoxSizeMode.StretchImage
-            };
-            cardSummary.Controls.Add(pic);
+                var phone = string.IsNullOrWhiteSpace(_ownerPhone) ? "01XXXXXXXXX" : _ownerPhone;
+                lblOwnerPhone.Text = $"Send money to this number:\n{phone}";
+            }
+            catch { }
 
-            var lblTitle = new AntdUI.Label
-            {
-                Text = titleText,
-                Font = new Font("Segoe UI Semibold", 13),
-                Location = new Point(20, 215),
-                Size = new Size(340, 30)
-            };
-            cardSummary.Controls.Add(lblTitle);
-
-            var lblTotalDue = new AntdUI.Label
-            {
-                Text = totalText,
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = Color.FromArgb(22, 119, 255),
-                Location = new Point(20, 430),
-                Size = new Size(340, 40)
-            };
-            cardSummary.Controls.Add(lblTotalDue);
+            try { btnConfirm.Text = $"Confirm Payment (৳{_amount:N0})"; } catch { }
         }
 
         // Draggable window logic
@@ -191,9 +200,9 @@ namespace RentalSystemUI.Forms
             base.OnMouseDown(e);
             if (e.Button == MouseButtons.Left)
             {
-                this.Capture = false;
-                System.Windows.Forms.Message m = System.Windows.Forms.Message.Create(this.Handle, 0xA1, new IntPtr(2), IntPtr.Zero);
-                this.WndProc(ref m);
+                Capture = false;
+                System.Windows.Forms.Message m = System.Windows.Forms.Message.Create(Handle, 0xA1, new IntPtr(2), IntPtr.Zero);
+                WndProc(ref m);
             }
         }
 

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using AntdUI;
 using RentalSystemUI.Forms.DashboardSections;
 using System.Collections.Generic;
+using RentalSystemUI.Services;
 
 namespace RentalSystemUI.Forms
 {
@@ -85,7 +86,7 @@ namespace RentalSystemUI.Forms
                 Margin = Padding.Empty,
                 Padding = Padding.Empty
             };
-            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 280));
+            _root.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 265));
             _root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             _root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
@@ -174,8 +175,31 @@ namespace RentalSystemUI.Forms
 
             string assetsPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets");
             AddMenuItem("Browse Homes", System.IO.Path.Combine(assetsPath, "dashboard.png"), () => NavigateToBrowse(), isDefault: true);
-            AddMenuItem("My Rentals", System.IO.Path.Combine(assetsPath, "properties.png"), () => NavigateTo(new MyRentals(_tenantId), "My Rentals"));
-            AddMenuItem("Requests", System.IO.Path.Combine(assetsPath, "calendar.png"), () => NavigateTo(new TenantRequestsList(_tenantId), "Requests"));
+            AddMenuItem("My Home", System.IO.Path.Combine(assetsPath, "properties.png"), () => NavigateTo(new MyRentals(_tenantId), "My Home"));
+            AddMenuItem("My Bookings", System.IO.Path.Combine(assetsPath, "calendar.png"), () => NavigateTo(new TenantRequestsList(_tenantId), "My Bookings"));
+            
+            // Messages with unread count
+            try
+            {
+                var unreadMsgs = new MessageService().GetUnreadCount(_tenantId);
+                var msgLabel = unreadMsgs > 0 ? $"Messages ({unreadMsgs})" : "Messages";
+                AddMenuItem(msgLabel, System.IO.Path.Combine(assetsPath, "message.png"), () => NavigateTo(new MessagesSection(_tenantId), "Messages"));
+            }
+            catch
+            {
+                AddMenuItem("Messages", System.IO.Path.Combine(assetsPath, "message.png"), () => NavigateTo(new MessagesSection(_tenantId), "Messages"));
+            }
+            
+            try
+            {
+                var unread = new NotificationService().GetUnreadCount(_tenantId);
+                var label = unread > 0 ? $"Notifications ({unread})" : "Notifications";
+                AddMenuItem(label, System.IO.Path.Combine(assetsPath, "notif.png"), () => NavigateTo(new NotificationsList(_tenantId), "Notifications"));
+            }
+            catch
+            {
+                AddMenuItem("Notifications", System.IO.Path.Combine(assetsPath, "notif.png"), () => NavigateTo(new NotificationsList(_tenantId), "Notifications"));
+            }
             AddMenuItem("Payments", System.IO.Path.Combine(assetsPath, "payment.png"), () => NavigateTo(new TenantPaymentList(_tenantId), "Payments"));
             AddMenuItem("Settings", System.IO.Path.Combine(assetsPath, "settings.png"), () => NavigateTo(new Settings(_tenantId), "Account Settings"));
 
@@ -214,7 +238,21 @@ namespace RentalSystemUI.Forms
             _signOutPanel.Controls.Add(logoutIcon);
             _signOutPanel.Controls.Add(_lblSignOut);
 
-            EventHandler signOutClick = (s, e) => Close();
+            EventHandler signOutClick = (s, e) =>
+            {
+                try { AppSession.Clear(); } catch { }
+                try
+                {
+                    Hide();
+                    var login = new Form1();
+                    login.FormClosed += (ss, ee) => { try { Close(); } catch { } };
+                    login.Show();
+                }
+                catch
+                {
+                    try { Close(); } catch { }
+                }
+            };
             _signOutPanel.Click += signOutClick;
             logoutIcon.Click += signOutClick;
             _lblSignOut.Click += signOutClick;
@@ -357,7 +395,7 @@ namespace RentalSystemUI.Forms
         {
             var item = new System.Windows.Forms.Panel
             {
-                Width = 240,
+                Width = 225,
                 Height = 44,
                 BackColor = Color.Transparent,
                 Cursor = Cursors.Hand,
@@ -455,7 +493,7 @@ namespace RentalSystemUI.Forms
         {
             isSidebarCollapsed = !isSidebarCollapsed;
 
-            _root.ColumnStyles[0].Width = isSidebarCollapsed ? 76 : 280;
+            _root.ColumnStyles[0].Width = isSidebarCollapsed ? 70 : 265;
 
             bool showText = !isSidebarCollapsed;
             _lblName.Visible = showText;
@@ -477,7 +515,7 @@ namespace RentalSystemUI.Forms
                         }
                     }
 
-                    p.Width = showText ? 240 : 52;
+                    p.Width = showText ? 225 : 52;
                     p.Padding = showText ? new Padding(10, 8, 10, 8) : new Padding(10, 8, 10, 8);
                 }
             }

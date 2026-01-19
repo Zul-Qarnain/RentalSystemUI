@@ -256,7 +256,9 @@
             sliderRent.Name = "sliderRent";
             sliderRent.Size = new Size(250, 30);
             sliderRent.TabIndex = 15;
-            sliderRent.Value = 50000;
+            sliderRent.MaxValue = 100000;
+            sliderRent.MinValue = 0;
+            sliderRent.Value = 100000;
             // 
             // lblRentValue
             // 
@@ -266,7 +268,7 @@
             lblRentValue.Name = "lblRentValue";
             lblRentValue.Size = new Size(266, 25);
             lblRentValue.TabIndex = 16;
-            lblRentValue.Text = "0                                50,000";
+            lblRentValue.Text = "৳0 — ৳100,000";
             // 
             // lblRentTitle
             // 

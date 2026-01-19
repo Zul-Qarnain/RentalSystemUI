@@ -56,7 +56,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.sub.Name = "sub";
             this.sub.Size = new System.Drawing.Size(262, 19);
             this.sub.TabIndex = 1;
-            this.sub.Text = "Overview of your properties and requests";
+            this.sub.Text = "Overview of your properties and bookings";
             // 
             // btnAdd
             // 

@@ -48,7 +48,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             {
                 _flow.Controls.Add(new AntdUI.Label
                 {
-                    Text = "No booking requests yet.",
+                    Text = "No bookings yet. Start by browsing homes!",
                     AutoSize = true,
                     ForeColor = Styles.TextGray,
                     Font = Styles.SubHeader,
