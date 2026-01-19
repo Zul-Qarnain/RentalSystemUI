@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using AntdUI;
 using RentalSystemUI.Forms.DashboardSections;
+using RentalSystemUI.Services;
 using System.Collections.Generic;
 
 namespace RentalSystemUI.Forms
@@ -50,7 +51,7 @@ namespace RentalSystemUI.Forms
             _sidebar = new System.Windows.Forms.Panel 
             { 
                 Dock = DockStyle.Left, 
-                Width = 250, 
+                Width = 235, 
                 BackColor = Color.White, 
                 Padding = new Padding(16) 
             };
@@ -140,7 +141,8 @@ namespace RentalSystemUI.Forms
             AddMenuButton(_menuPanel, "Dashboard", System.IO.Path.Combine(assetsPath, "dashboard.png"), true, () => NavigateTo(new DashboardHome(this), "Dashboard Overview"));
             AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => NavigateTo(new MyProperties(1, this), "My Properties"));
             AddMenuButton(_menuPanel, "Financials", System.IO.Path.Combine(assetsPath, "payment.png"), false, () => NavigateTo(new PaymentList(), "Financials"));
-            AddMenuButton(_menuPanel, "Requests", System.IO.Path.Combine(assetsPath, "calendar.png"), false, () => NavigateTo(new RequestList(), "Maintenance Requests"));
+            AddMenuButton(_menuPanel, "Bookings", System.IO.Path.Combine(assetsPath, "calendar.png"), false, () => NavigateTo(new RequestList(), "Booking Requests"));
+            AddMenuButton(_menuPanel, "Messages", System.IO.Path.Combine(assetsPath, "message.png"), false, () => NavigateTo(new MessagesSection(), "Messages"));
             AddMenuButton(_menuPanel, "Settings", System.IO.Path.Combine(assetsPath, "settings.png"), false, () => NavigateTo(new Settings(1), "Settings"));
 
             sidebarContent.Controls.Add(_menuPanel);
@@ -182,7 +184,21 @@ namespace RentalSystemUI.Forms
             _signOutPanel.Controls.Add(_lblSignOut);
             _signOutPanel.Controls.Add(logoutIcon);
             
-            EventHandler signOutClick = (s, e) => this.Close();
+            EventHandler signOutClick = (s, e) =>
+            {
+                try { AppSession.Clear(); } catch { }
+                try
+                {
+                    Hide();
+                    var login = new Form1();
+                    login.FormClosed += (ss, ee) => { try { Close(); } catch { } };
+                    login.Show();
+                }
+                catch
+                {
+                    try { Close(); } catch { }
+                }
+            };
             _signOutPanel.Click += signOutClick;
             logoutIcon.Click += signOutClick;
             _lblSignOut.Click += signOutClick;
@@ -280,7 +296,7 @@ namespace RentalSystemUI.Forms
 
             if (isSidebarCollapsed)
             {
-                _sidebar.Width = 70;
+                _sidebar.Width = 65;
                 _lblName.Visible = false;
                 _lblRole.Visible = false;
 
@@ -303,12 +319,12 @@ namespace RentalSystemUI.Forms
             }
             else
             {
-                _sidebar.Width = 250;
+                _sidebar.Width = 235;
                 _lblName.Visible = true;
                 _lblRole.Visible = true;
 
                 // Signout panel adjust
-                _signOutPanel.Width = 217;
+                _signOutPanel.Width = 200;
                 foreach(Control c in _signOutPanel.Controls) {
                     if (c is AntdUI.Label) c.Visible = true;
                     if (c is PictureBox pb) pb.Location = new Point(16, 15);
@@ -316,7 +332,7 @@ namespace RentalSystemUI.Forms
 
                 foreach (Control pnl in _menuControls)
                 {
-                    pnl.Width = 220;
+                    pnl.Width = 208;
                     foreach(Control c in pnl.Controls)
                     {
                         if(c is AntdUI.Label) c.Visible = true;
@@ -338,7 +354,7 @@ namespace RentalSystemUI.Forms
         {
             System.Windows.Forms.Panel btnPanel = new System.Windows.Forms.Panel
             {
-                Width = 220,
+                Width = 208,
                 Height = 45,
                 Margin = new Padding(0, 0, 0, 4),
                 BackColor = Color.Transparent,

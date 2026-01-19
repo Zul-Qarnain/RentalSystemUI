@@ -13,8 +13,12 @@ namespace RentalSystemUI
 
             try
             {
-                // Initializer Database Tables
-                try { new RentalSystemUI.Data.DatabaseInitializer().EnsureTablesExist(); } catch { }
+                Console.WriteLine("--- APP STARTUP ---");
+                
+                // Initializer Database Tables (Do not swallow errors)
+                Console.WriteLine("Initializing Database...");
+                new RentalSystemUI.Data.DatabaseInitializer().EnsureTablesExist();
+                Console.WriteLine("Database Initialized.");
 
                 // DEBUG: Check Columns
                 using (var conn = new RentalSystemUI.Data.Database().GetConnection())
@@ -32,6 +36,7 @@ namespace RentalSystemUI
                 // Check if .env file exists before running
                 if (!System.IO.File.Exists(".env"))
                 {
+                    Console.WriteLine("CRITICAL ERROR: .env file is missing!");
                     MessageBox.Show("CRITICAL ERROR: The .env file is missing from the build folder.\n\nMake sure you set 'Copy to Output Directory' to 'Copy Always' in Visual Studio properties.", "Startup Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }

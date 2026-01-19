@@ -41,7 +41,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             {
                 _flow.Controls.Add(new AntdUI.Label
                 {
-                    Text = "You have no active rentals.",
+                    Text = "No active rentals. Book a property to see it here!",
                     AutoSize = true,
                     ForeColor = Styles.TextGray,
                     Font = Styles.SubHeader
@@ -79,6 +79,8 @@ namespace RentalSystemUI.Forms.DashboardSections
                 Font = Styles.CardTitle,
                 ForeColor = Styles.DarkBlue,
                 Location = new Point(30, 20),
+                MaximumSize = new Size(500, 0),
+                AutoEllipsis = true,
                 AutoSize = true
             };
 
@@ -88,12 +90,14 @@ namespace RentalSystemUI.Forms.DashboardSections
                 Font = Styles.Normal,
                 ForeColor = Styles.TextGray,
                 Location = new Point(30, 48),
+                MaximumSize = new Size(500, 0),
+                AutoEllipsis = true,
                 AutoSize = true
             };
 
             var lblPrice = new AntdUI.Label
             {
-                Text = $"?{r.MonthlyRent:N0} / month",
+                Text = $"৳{r.MonthlyRent:N0} / month",
                 Font = Styles.Bold,
                 ForeColor = Styles.Blue,
                 Location = new Point(30, 78),

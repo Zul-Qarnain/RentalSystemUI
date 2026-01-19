@@ -1,4 +1,3 @@
-
 namespace RentalSystemUI.Forms.DashboardSections
 {
     partial class RequestList
@@ -22,7 +21,8 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.lblTitle = new AntdUI.Label();
             this.btnAll = new AntdUI.Button();
             this.btnPending = new AntdUI.Button();
-            this.btnAccepted = new AntdUI.Button();
+            this.btnApproved = new AntdUI.Button();
+            this.btnRejected = new AntdUI.Button();
             this._flow = new System.Windows.Forms.FlowLayoutPanel();
             this.header.SuspendLayout();
             this.SuspendLayout();
@@ -32,7 +32,8 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.header.Controls.Add(this.lblTitle);
             this.header.Controls.Add(this.btnAll);
             this.header.Controls.Add(this.btnPending);
-            this.header.Controls.Add(this.btnAccepted);
+            this.header.Controls.Add(this.btnApproved);
+            this.header.Controls.Add(this.btnRejected);
             this.header.Dock = System.Windows.Forms.DockStyle.Top;
             this.header.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
             this.header.Location = new System.Drawing.Point(0, 0);
@@ -51,7 +52,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(242, 45);
             this.lblTitle.TabIndex = 0;
-            this.lblTitle.Text = "Tenant Requests";
+            this.lblTitle.Text = "Tenant Bookings";
             // 
             // btnAll
             // 
@@ -62,7 +63,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.btnAll.Radius = 15;
             this.btnAll.Size = new System.Drawing.Size(120, 36);
             this.btnAll.TabIndex = 1;
-            this.btnAll.Text = "All Requests";
+            this.btnAll.Text = "All";
             this.btnAll.Type = AntdUI.TTypeMini.Primary;
             // 
             // btnPending
@@ -78,18 +79,31 @@ namespace RentalSystemUI.Forms.DashboardSections
             this.btnPending.Text = "Pending";
             this.btnPending.Type = AntdUI.TTypeMini.Default;
             // 
-            // btnAccepted
+            // btnApproved
             // 
-            this.btnAccepted.BackColor = System.Drawing.Color.White;
-            this.btnAccepted.BorderWidth = 0F;
-            this.btnAccepted.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(163)))), ((int)(((byte)(174)))), ((int)(((byte)(208)))));
-            this.btnAccepted.Location = new System.Drawing.Point(540, 28);
-            this.btnAccepted.Name = "btnAccepted";
-            this.btnAccepted.Radius = 15;
-            this.btnAccepted.Size = new System.Drawing.Size(100, 36);
-            this.btnAccepted.TabIndex = 3;
-            this.btnAccepted.Text = "Accepted";
-            this.btnAccepted.Type = AntdUI.TTypeMini.Default;
+            this.btnApproved.BackColor = System.Drawing.Color.White;
+            this.btnApproved.BorderWidth = 0F;
+            this.btnApproved.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(163)))), ((int)(((byte)(174)))), ((int)(((byte)(208)))));
+            this.btnApproved.Location = new System.Drawing.Point(540, 28);
+            this.btnApproved.Name = "btnApproved";
+            this.btnApproved.Radius = 15;
+            this.btnApproved.Size = new System.Drawing.Size(110, 36);
+            this.btnApproved.TabIndex = 3;
+            this.btnApproved.Text = "Approved";
+            this.btnApproved.Type = AntdUI.TTypeMini.Default;
+            // 
+            // btnRejected
+            // 
+            this.btnRejected.BackColor = System.Drawing.Color.White;
+            this.btnRejected.BorderWidth = 0F;
+            this.btnRejected.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(163)))), ((int)(((byte)(174)))), ((int)(((byte)(208)))));
+            this.btnRejected.Location = new System.Drawing.Point(656, 28);
+            this.btnRejected.Name = "btnRejected";
+            this.btnRejected.Radius = 15;
+            this.btnRejected.Size = new System.Drawing.Size(110, 36);
+            this.btnRejected.TabIndex = 4;
+            this.btnRejected.Text = "Rejected";
+            this.btnRejected.Type = AntdUI.TTypeMini.Default;
             // 
             // _flow
             // 
@@ -126,7 +140,8 @@ namespace RentalSystemUI.Forms.DashboardSections
         private AntdUI.Label lblTitle;
         private AntdUI.Button btnAll;
         private AntdUI.Button btnPending;
-        private AntdUI.Button btnAccepted;
+        private AntdUI.Button btnApproved;
+        private AntdUI.Button btnRejected;
         private System.Windows.Forms.FlowLayoutPanel _flow;
     }
 }

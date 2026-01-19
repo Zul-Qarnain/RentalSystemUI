@@ -16,7 +16,7 @@ namespace RentalSystemUI.Forms
         private readonly UserDashboard? _dashboard;
         private bool _loadedOnce;
 
-        private const int RentMaxTaka = 50000;
+        private const int RentMaxTaka = 100000;
 
         private bool _rentTouched;
         private bool _bedsTouched;
@@ -25,7 +25,7 @@ namespace RentalSystemUI.Forms
         private bool _corrTouched;
         private bool _sqftTouched;
         private bool _petTouched;
-        private bool _parkingTouched;
+
 
         public RentAllSearch(UserDashboard? dashboard = null)
         {
@@ -78,7 +78,7 @@ namespace RentalSystemUI.Forms
             }
 
             if (chkPet != null) chkPet.CheckedChanged += (s, e) => { _petTouched = true; LoadRealData(); };
-            if (chkParking != null) chkParking.CheckedChanged += (s, e) => { _parkingTouched = true; LoadRealData(); };
+            // if (chkParking != null) chkParking.CheckedChanged += (s, e) => { _parkingTouched = true; LoadRealData(); };
 
             // Remove deprecated checkboxes from behavior (and optionally hide)
             try { if (chkAC != null) chkAC.Visible = false; } catch { }
@@ -108,7 +108,7 @@ namespace RentalSystemUI.Forms
             _corrTouched = false;
             _sqftTouched = false;
             _petTouched = false;
-            _parkingTouched = false;
+            _petTouched = false;
 
             if (sliderRent != null)
             {
@@ -144,7 +144,7 @@ namespace RentalSystemUI.Forms
         {
             if (lblRentTitle != null) lblRentTitle.Text = "Monthly Rent (Max)";
             if (lblRentValue == null || sliderRent == null) return;
-            lblRentValue.Text = $"0                              {sliderRent.Value:N0}";
+            lblRentValue.Text = $"৳0 — ৳{sliderRent.Value:N0}";
         }
 
         private PropertySearchFilter BuildFilterFromUi()
@@ -183,8 +183,8 @@ namespace RentalSystemUI.Forms
             if (_petTouched && chkPet != null && chkPet.Checked)
                 filter.PetFriendly = true;
 
-            // Parking isn't in current DB schema, so do not filter server-side.
-            // We keep the checkbox for UI only.
+            // Parking isn't in current DB schema, so no backend filter.
+            // We keep the checkbox for UI only but don't track state.
 
             filter.OnlyAvailable = true;
             return filter;
@@ -271,7 +271,7 @@ namespace RentalSystemUI.Forms
                         prop.PropertyID,
                         prop.Title,
                         prop.Address,
-                        prop.RentAmount.ToString("N0"),
+                        $"৳{prop.RentAmount:N0}",
                         "4.8",
                         "",
                         prop.FirstImagePath
@@ -285,7 +285,7 @@ namespace RentalSystemUI.Forms
 
         private void AddProperty(int id, string title, string location, string price, string rating, string badge, string imagePath)
         {
-            AntdUI.Panel card = new AntdUI.Panel { Size = new Size(320, 380), Radius = 12, BackColor = Color.White, Margin = new Padding(15), Shadow = 10, ShadowColor = Color.FromArgb(20, 0, 0, 0), Cursor = Cursors.Hand };
+            AntdUI.Panel card = new AntdUI.Panel { Size = new Size(320, 420), Radius = 12, BackColor = Color.White, Margin = new Padding(15), Shadow = 10, ShadowColor = Color.FromArgb(20, 0, 0, 0), Cursor = Cursors.Hand };
 
             card.Click += (s, e) => OpenDetailsPage(id);
 

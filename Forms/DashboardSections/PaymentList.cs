@@ -9,7 +9,9 @@ namespace RentalSystemUI.Forms.DashboardSections
     public partial class PaymentList : Form
     {
         private LandlordService _service = new LandlordService();
-        private int _landlordId = 1;
+        
+        // Use current user's ID instead of hardcoded value (SECURITY FIX)
+        private int LandlordId => AppSession.CurrentUser?.UserID ?? 0;
 
         public PaymentList()
         {
@@ -20,7 +22,7 @@ namespace RentalSystemUI.Forms.DashboardSections
         private void LoadData()
         {
             _flow.Controls.Clear();
-            var payments = _service.GetPayments(_landlordId);
+            var payments = _service.GetPayments(LandlordId);
 
             if (payments.Count == 0)
             {
@@ -50,7 +52,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             System.Windows.Forms.Panel stripe = new System.Windows.Forms.Panel { Dock = DockStyle.Left, Width = 8, BackColor = stripeColor };
             card.Controls.Add(stripe);
 
-            AntdUI.Label lblAmount = new AntdUI.Label { Text = $"?{p.Amount:N0}", Font = Styles.PageTitle, ForeColor = Styles.DarkBlue, Location = new Point(30, 25), AutoSize = true };
+            AntdUI.Label lblAmount = new AntdUI.Label { Text = $"৳{p.Amount:N0}", Font = Styles.PageTitle, ForeColor = Styles.DarkBlue, Location = new Point(30, 25), AutoSize = true };
             AntdUI.Label lblDate = new AntdUI.Label
             {
                 Text = "Paid: " + (p.PaymentDate?.ToShortDateString() ?? "N/A"),

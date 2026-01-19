@@ -15,5 +15,6 @@ namespace RentalSystemUI.Models
 
         // Navigation / View Properties
         public string TenantName { get; set; } = string.Empty;
+        public string PropertyTitle { get; set; } = string.Empty;
     }
 }

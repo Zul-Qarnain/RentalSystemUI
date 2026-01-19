@@ -152,7 +152,7 @@ namespace RentalSystemUI.Forms.DashboardSections
             int contentY = 190;
 
             AntdUI.Label lblTitle = new AntdUI.Label { Text = property.Title, Font = Styles.CardTitle, ForeColor = Styles.DarkBlue, Location = new Point(20, contentY), AutoSize = true };
-            AntdUI.Label lblPrice = new AntdUI.Label { Text = $"${property.RentAmount:N0}", Font = Styles.Bold, ForeColor = Styles.Blue, Location = new Point(240, contentY + 2), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
+            AntdUI.Label lblPrice = new AntdUI.Label { Text = $"৳{property.RentAmount:N0}", Font = Styles.Bold, ForeColor = Styles.Blue, Location = new Point(240, contentY + 2), AutoSize = true, Anchor = AnchorStyles.Top | AnchorStyles.Right };
             AntdUI.Label lblAddr = new AntdUI.Label { Text = $"{property.Address}", Font = Styles.Normal, ForeColor = Styles.TextGray, Location = new Point(20, contentY + 35), AutoSize = true };
 
             // Manage Button

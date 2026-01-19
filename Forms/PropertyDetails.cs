@@ -29,25 +29,33 @@ namespace RentalSystemUI.Forms
             this.StartPosition = FormStartPosition.CenterScreen;
             _propertyId = propertyId;
             LoadPropertyData();
-            AddDummyAmenities();
         }
 
         private void LoadPropertyData()
         {
             try
             {
-                // Get property images and basic info
+                // Get full property details
+                var prop = _propService.GetPropertyById(_propertyId);
+                if (prop == null)
+                {
+                    AntdUI.Message.error(this, "Property not found!");
+                    Close();
+                    return;
+                }
+
+                // Get images and reviews
                 var images = _propService.GetPropertyImages(_propertyId);
                 var reviews = _propService.GetReviewsForProperty(_propertyId);
 
-                // For now, set basic placeholder values
-                // TODO: Add GetPropertyById method to PropertyService
-                lblTitle.Text = "Property #" + _propertyId;
-                lblSubHeader.Text = $"★ {(reviews.Count > 0 ? "4.98" : "New")} ({reviews.Count} reviews)";
-                lblDescription.Text = "Property details loaded from database.";
+                // Populate UI
+                lblTitle.Text = prop.Title;
+                lblSubHeader.Text = $"★ {(reviews.Count > 0 ? "4.98" : "New")} ({reviews.Count} reviews) • {prop.City}";
+                lblDescription.Text = prop.Description;
 
-                lblPriceLarge.Text = "$1,500";
-                lblTotalValue.Text = "$1,650";
+                // Price Formatting (Real BDT)
+                lblPriceLarge.Text = $"৳{prop.RentAmount:N0} / month";
+                lblTotalValue.Text = $"৳{prop.RentAmount:N0}";
 
                 // Images
                 if (images.Count > 0) SetImage(picMain, images[0]);
@@ -55,11 +63,47 @@ namespace RentalSystemUI.Forms
                 if (images.Count > 2) SetImage(picSub2, images[2]);
                 if (images.Count > 3) SetImage(picSub3, images[3]);
                 if (images.Count > 4) SetImage(picSub4, images[4]);
+
+                // Handle Booked State
+                bool isRented = prop.Status == "Rented" || !prop.AvailabilityStatus;
+                if (isRented)
+                {
+                    btnBook.Text = "ALREADY BOOKED";
+                    btnBook.Enabled = false;
+                    btnBook.Type = TTypeMini.Default; // Grey button
+                    btnBook.BackColor = Color.LightGray;
+                    btnBook.ForeColor = Color.DarkGray;
+                }
+                
+                // Real Amenities
+                LoadAmenities(prop);
             }
             catch (Exception ex)
             {
                 AntdUI.Message.error(this, "Error: " + ex.Message);
             }
+        }
+
+        private void LoadAmenities(PropertyModel p)
+        {
+             flowAmenities.Controls.Clear();
+             AddAmenityIf(p.Rooms > 0, $"{p.Rooms} Bedrooms");
+             AddAmenityIf(p.Kitchen > 0, $"{p.Kitchen} Kitchen");
+             AddAmenityIf(p.WashRoom > 0, $"{p.WashRoom} Washroom");
+             AddAmenityIf(p.IsAC, "Air Conditioning");
+             AddAmenityIf(p.IsPetAllowed, "Pets Allowed");
+             AddAmenityIf(true, "Wifi"); // Assuming all have wifi for now as it's not in DB
+        }
+
+        private void AddAmenityIf(bool condition, string text)
+        {
+            if (!condition) return;
+            System.Windows.Forms.Label lbl = new System.Windows.Forms.Label();
+            lbl.Text = "• " + text;
+            lbl.AutoSize = true;
+            lbl.Font = new Font("Segoe UI", 10);
+            lbl.Margin = new Padding(0, 5, 20, 5);
+            flowAmenities.Controls.Add(lbl);
         }
 
         private void SetImage(PictureBox box, string path)
@@ -72,20 +116,7 @@ namespace RentalSystemUI.Forms
             }
         }
 
-        private void AddDummyAmenities()
-        {
-            if (flowAmenities.Controls.Count > 0) return;
-            string[] items = { "Wifi", "Kitchen", "Washer", "Dryer", "Air conditioning", "Heating", "Dedicated workspace", "TV", "Hair dryer", "Iron" };
-            foreach (var item in items)
-            {
-                System.Windows.Forms.Label lbl = new System.Windows.Forms.Label();
-                lbl.Text = "• " + item;
-                lbl.AutoSize = true;
-                lbl.Font = new Font("Segoe UI", 10);
-                lbl.Margin = new Padding(0, 5, 20, 5);
-                flowAmenities.Controls.Add(lbl);
-            }
-        }
+
 
         private void btnBookNow_Click(object sender, EventArgs e)
         {
@@ -110,13 +141,18 @@ namespace RentalSystemUI.Forms
             }
 
             int bookingId = _tenantService.CreateBooking(user.UserID, _propertyId, start, end);
+            if (bookingId == -2)
+            {
+                AntdUI.Message.error(this, "This property is already booked. Please try another property.");
+                return;
+            }
             if (bookingId <= 0)
             {
                 AntdUI.Message.error(this, "Could not create booking. Please try again.");
                 return;
             }
 
-            AntdUI.Message.success(this, $"Booking request sent (ID: {bookingId}). Waiting for homeowner approval.");
+            AntdUI.Message.success(this, $"Booking submitted successfully! Awaiting landlord approval.");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
