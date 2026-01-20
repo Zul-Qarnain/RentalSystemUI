@@ -41,6 +41,7 @@
   <ItemGroup>
     <Folder Include="Assets\" />
     <Folder Include="Classes\" />
+    <Folder Include="Tools\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,12 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
+using System.Net.Http;
+using System.Net;
+using System.Text.Json;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using RentalSystemUI.Data;
 using RentalSystemUI.Services;
 
@@ -56,6 +62,10 @@ namespace RentalSystemUI.Forms
                 if (btnMobileBanking != null)
                 {
                     btnMobileBanking.Type = AntdUI.TTypeMini.Primary;
+                }
+                if (btnEpay != null)
+                {
+                    btnEpay.Click += InitSSLCommerz;
                 }
             }
             catch { }
@@ -203,6 +213,102 @@ namespace RentalSystemUI.Forms
                 Capture = false;
                 System.Windows.Forms.Message m = System.Windows.Forms.Message.Create(Handle, 0xA1, new IntPtr(2), IntPtr.Zero);
                 WndProc(ref m);
+            }
+        }
+
+        private async void InitSSLCommerz(object? sender, EventArgs e)
+        {
+            if (_amount <= 0) 
+            {
+                AntdUI.Message.warn(this, "Amount is zero.");
+                return;
+            }
+
+            try 
+            {
+                AntdUI.Message.info(this, "Initiating SSLCommerz..."); 
+                
+                using var client = new HttpClient();
+                client.Timeout = TimeSpan.FromSeconds(30); // 30s timeout
+
+                string storeId = Environment.GetEnvironmentVariable("SSLCOMMERZ_STORE_ID") ?? "testbox";
+                string storePass = Environment.GetEnvironmentVariable("SSLCOMMERZ_STORE_PASSWORD") ?? "qwerty";
+                string apiUrl = Environment.GetEnvironmentVariable("SSLCOMMERZ_API_URL") ?? "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
+
+                var values = new Dictionary<string, string>
+                {
+                    { "store_id", storeId },
+                    { "store_passwd", storePass },
+                    { "total_amount", _amount.ToString() },
+                    { "currency", "BDT" },
+                    { "tran_id", $"TRX_{DateTime.Now.Ticks}" },
+                    { "success_url", "https://example.com/success" }, 
+                    { "fail_url", "https://example.com/fail" },
+                    { "cancel_url", "https://example.com/cancel" },
+                    { "cus_name", "Test User" }, 
+                    { "cus_email", "test@test.com" },
+                    { "cus_add1", "Address" },
+                    { "cus_city", "Dhaka" },
+                    { "cus_country", "Bangladesh" },
+                    { "cus_phone", "01711111111" },
+                    
+                    // Mandatory parameters for some accounts
+                    { "shipping_method", "NO" },
+                    { "product_name", "Rental Payment" },
+                    { "product_category", "Rental" },
+                    { "product_profile", "general" }, 
+
+                    { "format", "json" }
+                };
+
+                var content = new FormUrlEncodedContent(values);
+                
+                // Ensure TLS 1.2/1.3 is used (Fix for connection hangs)
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+
+                var response = await client.PostAsync(apiUrl, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                using var doc = JsonDocument.Parse(responseString);
+                
+                if (doc.RootElement.TryGetProperty("GatewayPageURL", out var urlElement) || 
+                    doc.RootElement.TryGetProperty("gatewayPageURL", out urlElement) ||
+                    doc.RootElement.TryGetProperty("redirectGatewayURL", out urlElement)) 
+                {
+                    string url = urlElement.GetString() ?? "";
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        try 
+                        {
+                            var psi = new ProcessStartInfo
+                            {
+                                FileName = url,
+                                UseShellExecute = true
+                            };
+                            Process.Start(psi);
+                            AntdUI.Message.success(this, "Redirecting to Payment Gateway...");
+                        }
+                        catch
+                        {
+                            Process.Start("explorer", url);
+                        }
+                    }
+                    else
+                    {
+                        AntdUI.Message.error(this, "Gateway URL missing: " + responseString);
+                    }
+                }
+                else
+                {
+                    if (doc.RootElement.TryGetProperty("failedreason", out var reason))
+                        AntdUI.Message.error(this, "SSLCommerz: " + (reason.GetString() ?? ""));
+                    else
+                        AntdUI.Message.error(this, "Failed: " + responseString);
+                }
+            }
+            catch
+            {
+                AntdUI.Message.error(this, "Error occurred while initiating payment.");
             }
         }
 

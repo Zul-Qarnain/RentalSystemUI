@@ -98,6 +98,8 @@ namespace RentalSystemUI.Forms
             // Drag support
             AttachDragEvents(_header);
             AttachDragEvents(_lblPageTitle);
+            
+            AddChatbotButton();
             AttachDragEvents(_sidebar);
         }
 
@@ -550,6 +552,37 @@ namespace RentalSystemUI.Forms
             page.PerformLayout();
 
             if (_lblPageTitle != null) _lblPageTitle.Text = title;
+        }
+
+        private void AddChatbotButton()
+        {
+            try
+            {
+                string iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "chatbot.png");
+                if (!System.IO.File.Exists(iconPath)) return; // Fail silently if icon missing
+
+                var btnChat = new PictureBox
+                {
+                    Size = new Size(60, 60),
+                    Cursor = Cursors.Hand,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    BackColor = Color.Transparent,
+                    Image = Image.FromFile(iconPath)
+                };
+                
+                // Floating position (Bottom Right)
+                btnChat.Location = new Point(this.ClientSize.Width - 80, this.ClientSize.Height - 80);
+                btnChat.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+                
+                btnChat.Click += (s, e) => 
+                {
+                    new ChatBotDialog().ShowDialog(this);
+                };
+                
+                this.Controls.Add(btnChat);
+                btnChat.BringToFront();
+            }
+            catch { }
         }
 
         private void AttachDragEvents(Control ctrl)

@@ -44,7 +44,9 @@ namespace RentalSystemUI
                 // Run the App
                 //Application.Run(new HomeownerDashboard());
                 //Application.Run(new UserDashboard(1));
-               Application.Run(new Form1());
+                string hash = BCrypt.Net.BCrypt.HashPassword("admin123");
+                File.WriteAllText("admin_hash.txt", hash);
+                Application.Run(new Form1());
             }
             catch (Exception ex)
             {

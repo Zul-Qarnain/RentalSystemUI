@@ -104,6 +104,22 @@ namespace RentalSystemUI.Controllers
             }
         }
 
+        public int ExecuteNonQuery(string query, SqlParameter[]? parameters = null)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    if (parameters != null)
+                    {
+                        cmd.Parameters.AddRange(parameters);
+                    }
+                    return cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public DataTable ExecuteQuery(string query, SqlParameter[]? parameters = null)
         {
             using (var conn = GetConnection())

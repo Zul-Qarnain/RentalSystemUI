@@ -37,6 +37,16 @@ namespace RentalSystemUI.Forms
             // Initial State
             if (pnlLogin != null) pnlLogin.Visible = true;
             if (pnlSignup != null) pnlSignup.Visible = false;
+            
+            // Temporary debug shortcut: Ctrl+Shift+D
+            this.KeyPreview = true;
+            this.KeyDown += (s, e) =>
+            {
+                if (e.Control && e.Shift && e.KeyCode == Keys.D)
+                {
+                    try { new DebugAdminLogin().Show(); } catch { }
+                }
+            };
         }
 
         private void SetupVisuals()
@@ -60,8 +70,8 @@ namespace RentalSystemUI.Forms
         // ============================================
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            string email = txtLoginEmail.Text.Trim();
-            string pass = txtLoginPass.Text.Trim();
+            string email = (txtLoginEmail.Text ?? string.Empty).Trim();
+            string pass = (txtLoginPass.Text ?? string.Empty).Trim();
 
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(pass))
             {
@@ -79,7 +89,11 @@ namespace RentalSystemUI.Forms
                 AntdUI.Message.success(this, $"Welcome back, {user.FullName}!");
 
                 Form next;
-                if (string.Equals(user.UserType, "Landlord", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(user.UserType, "SuperAdmin", StringComparison.OrdinalIgnoreCase))
+                {
+                    next = new AdminDashboard();
+                }
+                else if (string.Equals(user.UserType, "Landlord", StringComparison.OrdinalIgnoreCase))
                 {
                     next = new HomeownerDashboard();
                 }

@@ -179,14 +179,14 @@
             // btnEpay
             // 
             btnEpay.BackColor = Color.FromArgb(248, 250, 252);
-            btnEpay.Enabled = false;
-            btnEpay.ForeColor = Color.FromArgb(148, 163, 184);
+            btnEpay.Enabled = true;
+            btnEpay.ForeColor = Color.FromArgb(22, 119, 255);
             btnEpay.Location = new Point(30, 95);
             btnEpay.Name = "btnEpay";
             btnEpay.Radius = 10;
             btnEpay.Size = new Size(140, 55);
             btnEpay.TabIndex = 1;
-            btnEpay.Text = "ePay\n(Coming Soon)";
+            btnEpay.Text = "SSLCommerz";
             btnEpay.Type = AntdUI.TTypeMini.Default;
             // 
             // lblPayMethod
