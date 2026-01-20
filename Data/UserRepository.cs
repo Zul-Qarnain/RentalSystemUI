@@ -42,7 +42,7 @@ namespace RentalSystemUI.Data
             {
                 conn.Open();
                 // Ensure we get Active users if that logic is needed (existing code: IsActive = 1)
-                string query = "SELECT UserID, FullName, Email, PasswordHash, Phone, UserType FROM USERS WHERE Email = @email AND IsActive = 1";
+                string query = "SELECT UserID, FullName, Email, PasswordHash, Phone, UserType FROM USERS WHERE LTRIM(RTRIM(LOWER(Email))) = LTRIM(RTRIM(LOWER(@email))) AND IsActive = 1";
                 using (var cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@email", email);

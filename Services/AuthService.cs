@@ -12,6 +12,14 @@ namespace RentalSystemUI.Services
         // Login: Validate credentials and return User object if successful
         public User? Login(string email, string plainPassword)
         {
+            // Ensure env vars are loaded and allow retry after any previous transient DB failure.
+            try { DotNetEnv.Env.Load(); } catch { }
+            try { DatabaseState.Reset(); } catch { }
+
+            email = (email ?? string.Empty).Trim();
+            plainPassword = (plainPassword ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(plainPassword)) return null;
+
             var user = _userRepo.GetByEmail(email);
             if (user == null) return null;
 
