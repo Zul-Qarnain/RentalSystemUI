@@ -153,13 +153,80 @@ namespace RentalSystemUI.Forms.DashboardSections
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
                 Enabled = r.Status == "Accepted"
             };
+
             btnPay.Click += (s, e) =>
             {
                 using (var payment = new RentalSystemUI.Forms.Payment(bookingId: r.BookingId))
                 {
                     payment.ShowDialog(this);
+                    LoadData();
                 }
             };
+
+            // BUTTON LOGIC
+            // Cancel: Allowed if Pending or Approved (and not yet Rented? Actually Approved means Rented, but if not moved in yet...)
+            // Simplification: Allow cancel if Approved or Pending.
+            btnCancel.Enabled = r.Status == "Pending" || r.Status == "Approved";
+
+            // If Approved AND Paid, show REFUND logic
+            if (r.Status == "Approved" && r.IsPaid)
+            {
+                btnPay.Visible = false; // Already paid
+                
+                if (string.IsNullOrEmpty(r.RefundStatus))
+                {
+                    var btnRefund = new AntdUI.Button
+                    {
+                        Text = "Request Refund",
+                        Type = TTypeMini.Warn,
+                        Radius = 8,
+                        Size = new Size(130, 36),
+                        Location = new Point(card.Width - 150, 70),
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right
+                    };
+                    btnRefund.Click += (s, e) =>
+                    {
+                        string reason = Microsoft.VisualBasic.Interaction.InputBox("Enter reason for refund:", "Request Refund", "Change of plans");
+                        if (!string.IsNullOrWhiteSpace(reason))
+                        {
+                            if(_service.RequestRefund(r.BookingId, reason)) 
+                            { 
+                                MessageBox.Show("Refund requested successfully."); 
+                                LoadData(); 
+                            }
+                            else 
+                            { 
+                                MessageBox.Show("Failed to request refund."); 
+                            }
+                        }
+                    };
+                    card.Controls.Add(btnRefund);
+                }
+                else
+                {
+                    var lblRefundStatus = new AntdUI.Label
+                    {
+                        Text = "Refund: " + r.RefundStatus,
+                        ForeColor = Styles.OrangeTxt,
+                        Font = Styles.Bold,
+                        Location = new Point(card.Width - 160, 75),
+                        AutoSize = true,
+                        Anchor = AnchorStyles.Top | AnchorStyles.Right
+                    };
+                    card.Controls.Add(lblRefundStatus);
+                    btnCancel.Visible = false; // Hide cancel if refund flow active
+                }
+            }
+            else if (r.Status == "Approved" && !r.IsPaid)
+            {
+                // Show Pay button
+                btnPay.Visible = true;
+            }
+            else
+            {
+                btnPay.Visible = false;
+            }
+
 
             card.Controls.Add(btnPay);
             card.Controls.Add(btnCancel);

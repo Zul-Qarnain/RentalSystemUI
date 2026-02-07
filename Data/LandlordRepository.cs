@@ -142,6 +142,85 @@ namespace RentalSystemUI.Data
             }
         }
 
+        // --- REFUNDS ---
+        public List<RefundRequestModel> GetRefundRequests(int landlordId)
+        {
+            var list = new List<RefundRequestModel>();
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                string query = @"
+                    SELECT r.RefundRequestID, r.BookingID, r.Status, r.Reason,
+                           b.TotalAmount, u.FullName as TenantName, p.Title as PropertyTitle
+                    FROM REFUND_REQUESTS r
+                    JOIN BOOKINGS b ON r.BookingID = b.BookingID
+                    JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
+                    JOIN USERS u ON b.TenantID = u.UserID
+                    WHERE p.LandlordID = @lid AND r.Status = 'Pending'
+                    ORDER BY r.RefundRequestID DESC";
+
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@lid", landlordId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            list.Add(new RefundRequestModel
+                            {
+                                RefundRequestID = (int)reader["RefundRequestID"],
+                                BookingID = (int)reader["BookingID"],
+                                Status = reader["Status"].ToString(),
+                                Reason = reader["Reason"].ToString(),
+                                CreatedAt = DateTime.MinValue, // Default since column is missing
+                                Amount = (decimal)reader["TotalAmount"],
+                                TenantName = reader["TenantName"].ToString(),
+                                PropertyTitle = reader["PropertyTitle"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+            return list;
+        }
+
+        public bool ApproveRefund(int refundId)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                // 1. Mark Refund as Approved
+                using (var cmd = new SqlCommand("UPDATE REFUND_REQUESTS SET Status='Approved' WHERE RefundRequestID=@rid", conn))
+                {
+                    cmd.Parameters.AddWithValue("@rid", refundId);
+                    if (cmd.ExecuteNonQuery() <= 0) return false;
+                }
+
+                // 2. Mark Payment as Refunded (Find payment via BookingID from Refund)
+                using (var cmdPay = new SqlCommand(@"UPDATE PAYMENTS SET Status='Refunded' 
+                                                     WHERE BookingID=(SELECT BookingID FROM REFUND_REQUESTS WHERE RefundRequestID=@rid)", conn))
+                {
+                    cmdPay.Parameters.AddWithValue("@rid", refundId);
+                    cmdPay.ExecuteNonQuery();
+                }
+
+                return true;
+            }
+        }
+
+        public bool RejectRefund(int refundId)
+        {
+             using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand("UPDATE REFUND_REQUESTS SET Status='Rejected' WHERE RefundRequestID=@rid", conn))
+                {
+                    cmd.Parameters.AddWithValue("@rid", refundId);
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
         // --- PAYMENTS ---
         public List<Payment> GetPaymentsByLandlord(int landlordId)
         {

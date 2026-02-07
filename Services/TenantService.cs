@@ -5,10 +5,12 @@ using RentalSystemUI.Models;
 
 namespace RentalSystemUI.Services
 {
+    // BUSINESS LOGIC LAYER: Handles operations related to Tenants, acting as a middleman between UI and Data.
     public class TenantService
     {
         private readonly TenantRepository _repo = new TenantRepository();
 
+        // Retrieves the list of rentals specifically for the logged-in tenant.
         public List<TenantRental> GetRentals(int tenantId)
         {
             return _repo.GetRentalsByTenant(tenantId);
@@ -19,6 +21,7 @@ namespace RentalSystemUI.Services
             return _repo.CancelRental(bookingId, tenantId);
         }
 
+        // Validates and processes a new payment record.
         public int CreatePayment(int tenantId, int propertyId, decimal amount, DateTime dueDate, string paymentMethod, string transactionId)
         {
             return _repo.CreatePayment(tenantId, propertyId, amount, dueDate, paymentMethod, transactionId);
@@ -76,6 +79,16 @@ namespace RentalSystemUI.Services
         public bool UpdateReview(int reviewId, int rating, string comment)
         {
             return _repo.UpdateReview(reviewId, rating, comment);
+        }
+
+        public bool RequestRefund(int bookingId, string reason)
+        {
+            return _repo.RequestRefund(bookingId, reason);
+        }
+
+        public string GetRefundStatus(int bookingId)
+        {
+            return _repo.GetRefundStatus(bookingId);
         }
     }
 }

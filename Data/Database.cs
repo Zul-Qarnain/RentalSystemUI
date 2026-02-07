@@ -7,6 +7,7 @@ using DotNetEnv;
 
 namespace RentalSystemUI.Data
 {
+    // DATA LAYER: This class handles the low-level connection to SQL Server.
     public class Database
     {
         public Database()
@@ -16,6 +17,7 @@ namespace RentalSystemUI.Data
             Env.Load();
         }
 
+        // Returns a new connection object. Always wrap this in a 'using' statement to ensure it closes.
         public SqlConnection GetConnection()
         {
             // Prefer the value from .env (via DotNetEnv) first, then fall back to process env

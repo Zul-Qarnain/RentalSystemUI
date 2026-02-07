@@ -4,6 +4,7 @@ using RentalSystemUI.Forms;
 
 namespace RentalSystemUI
 {
+    // ENTRY POINT: This class is the starting point of the application.
     internal static class Program
     {
         [STAThread]
@@ -17,6 +18,7 @@ namespace RentalSystemUI
                 
                 // Initializer Database Tables (Do not swallow errors)
                 Console.WriteLine("Initializing Database...");
+                // CRITICAL: Ensures the Database and Tables exist before the app shows any window.
                 new RentalSystemUI.Data.DatabaseInitializer().EnsureTablesExist();
                 Console.WriteLine("Database Initialized.");
 
@@ -46,6 +48,8 @@ namespace RentalSystemUI
                 //Application.Run(new UserDashboard(1));
                 string hash = BCrypt.Net.BCrypt.HashPassword("admin123");
                 File.WriteAllText("admin_hash.txt", hash);
+
+                // START UI: Loads the Login Form (Form1) to begin the user session.
                 Application.Run(new Form1());
             }
             catch (Exception ex)
