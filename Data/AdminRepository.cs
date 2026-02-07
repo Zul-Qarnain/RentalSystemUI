@@ -143,12 +143,12 @@ namespace RentalSystemUI.Data
                     p.Method,
                     p.Status,
                     ISNULL(p.PaymentDate, GETDATE()) AS PaymentDate,
-                    u.FullName AS PayerName,
-                    u.Email AS PayerEmail,
-                    u.Phone AS PayerPhone
+                    ISNULL(u.FullName, 'Unknown Payer') AS PayerName,
+                    ISNULL(u.Email, '') AS PayerEmail,
+                    ISNULL(u.Phone, '') AS PayerPhone
                 FROM PAYMENTS p
-                JOIN BOOKINGS b ON p.BookingID = b.BookingID
-                JOIN USERS u ON b.TenantID = u.UserID
+                LEFT JOIN BOOKINGS b ON p.BookingID = b.BookingID
+                LEFT JOIN USERS u ON b.TenantID = u.UserID
                 ORDER BY ISNULL(p.PaymentDate, GETDATE()) DESC
             ";
             return _dbHelper.ExecuteQuery(query);

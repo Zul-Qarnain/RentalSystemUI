@@ -277,10 +277,12 @@ namespace RentalSystemUI.Data
                 string query = @"
                     SELECT b.BookingID, b.PropertyID, b.TenantID, b.CreatedAt, b.Status,
                            b.StartDate, b.EndDate, b.DurationMonths, b.TotalAmount,
-                           p.Title, p.Address, p.City, p.RentAmount
+                           p.Title, p.Address, p.City, p.RentAmount,
+                           (SELECT TOP 1 Status FROM REFUND_REQUESTS rr WHERE rr.BookingID = b.BookingID) as RefundStatus,
+                           (SELECT COUNT(*) FROM PAYMENTS pay WHERE pay.BookingID = b.BookingID AND pay.Status = 'Verified') as IsPaid
                     FROM BOOKINGS b
                     JOIN PROPERTIES p ON b.PropertyID = p.PropertyID
-                    WHERE b.TenantID = @tid AND b.Status = 'Approved'
+                    WHERE b.TenantID = @tid AND (b.Status = 'Approved' OR b.Status = 'Cancelled' OR b.Status = 'Rejected')
                     ORDER BY b.CreatedAt DESC";
 
                 using (var cmd = new SqlCommand(query, conn))
@@ -303,7 +305,10 @@ namespace RentalSystemUI.Data
                                 StartDate = (DateTime)reader["StartDate"],
                                 EndDate = (DateTime)reader["EndDate"],
                                 DurationMonths = reader["DurationMonths"] as int?,
-                                TotalAmount = (decimal)reader["TotalAmount"]
+
+                                TotalAmount = (decimal)reader["TotalAmount"],
+                                RefundStatus = reader["RefundStatus"]?.ToString(),
+                                IsPaid = reader["IsPaid"] != DBNull.Value && (int)reader["IsPaid"] > 0
                             });
                         }
                     }
@@ -355,14 +360,63 @@ namespace RentalSystemUI.Data
             using (var conn = GetConnection())
             {
                 conn.Open();
-                // Booking model has only Pending/Approved/Rejected. We'll mark cancelled bookings as Rejected.
-                string sql = @"UPDATE BOOKINGS SET Status='Rejected'
-                               WHERE BookingID=@id AND TenantID=@tid AND Status='Approved'";
+                // Update Booking Status to 'Cancelled'
+                string sql = @"UPDATE BOOKINGS SET Status='Cancelled'
+                               WHERE BookingID=@id AND TenantID=@tid AND (Status='Approved' OR Status='Pending')";
+                
                 using (var cmd = new SqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@id", bookingId);
                     cmd.Parameters.AddWithValue("@tid", tenantId);
+                    int rows = cmd.ExecuteNonQuery();
+
+                    if (rows > 0)
+                    {
+                        // Also free up the property
+                        using (var cmdProp = new SqlCommand("UPDATE PROPERTIES SET Status='Available', AvailabilityStatus=1 WHERE PropertyID=(SELECT PropertyID FROM BOOKINGS WHERE BookingID=@bid)", conn))
+                        {
+                            cmdProp.Parameters.AddWithValue("@bid", bookingId);
+                            cmdProp.ExecuteNonQuery();
+                        }
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        public bool RequestRefund(int bookingId, string reason)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                // Check if already requested
+                using (var check = new SqlCommand("SELECT COUNT(*) FROM REFUND_REQUESTS WHERE BookingID=@bid", conn))
+                {
+                    check.Parameters.AddWithValue("@bid", bookingId);
+                    if ((int)check.ExecuteScalar() > 0) return false;
+                }
+
+                using (var cmd = new SqlCommand(@"INSERT INTO REFUND_REQUESTS (BookingID, TenantID, Status, Reason) 
+                                                  SELECT BookingID, TenantID, 'Pending', @reason 
+                                                  FROM BOOKINGS WHERE BookingID=@bid", conn))
+                {
+                    cmd.Parameters.AddWithValue("@bid", bookingId);
+                    cmd.Parameters.AddWithValue("@reason", reason ?? "");
                     return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        public string GetRefundStatus(int bookingId)
+        {
+            using (var conn = GetConnection())
+            {
+                conn.Open();
+                using (var cmd = new SqlCommand("SELECT Status FROM REFUND_REQUESTS WHERE BookingID=@bid", conn))
+                {
+                    cmd.Parameters.AddWithValue("@bid", bookingId);
+                    return cmd.ExecuteScalar()?.ToString();
                 }
             }
         }
@@ -522,5 +576,7 @@ namespace RentalSystemUI.Data
         public DateTime EndDate { get; set; }
         public int? DurationMonths { get; set; }
         public decimal TotalAmount { get; set; }
+        public string RefundStatus { get; set; }
+        public bool IsPaid { get; set; }
     }
 }

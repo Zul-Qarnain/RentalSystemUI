@@ -143,6 +143,7 @@ namespace RentalSystemUI.Forms
             AddMenuButton(_menuPanel, "My Properties", System.IO.Path.Combine(assetsPath, "properties.png"), false, () => NavigateTo(new MyProperties(1, this), "My Properties"));
             AddMenuButton(_menuPanel, "Financials", System.IO.Path.Combine(assetsPath, "payment.png"), false, () => NavigateTo(new PaymentList(), "Financials"));
             AddMenuButton(_menuPanel, "Bookings", System.IO.Path.Combine(assetsPath, "calendar.png"), false, () => NavigateTo(new RequestList(), "Booking Requests"));
+            AddMenuButton(_menuPanel, "Refunds", System.IO.Path.Combine(assetsPath, "payment.png"), false, () => NavigateTo(new RefundList(), "Refund Requests"));
             AddMenuButton(_menuPanel, "Messages", System.IO.Path.Combine(assetsPath, "message.png"), false, () => NavigateTo(new MessagesSection(), "Messages"));
             AddMenuButton(_menuPanel, "Settings", System.IO.Path.Combine(assetsPath, "settings.png"), false, () => NavigateTo(new Settings(1), "Settings"));
 

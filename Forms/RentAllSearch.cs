@@ -274,7 +274,8 @@ namespace RentalSystemUI.Forms
                         $"৳{prop.RentAmount:N0}",
                         "4.8",
                         "",
-                        prop.FirstImagePath
+                        prop.FirstImagePath,
+                        prop.Status
                     );
                 }
 
@@ -283,9 +284,10 @@ namespace RentalSystemUI.Forms
             catch (Exception ex) { AntdUI.Message.error(this, "Error: " + ex.Message); }
         }
 
-        private void AddProperty(int id, string title, string location, string price, string rating, string badge, string imagePath)
+        private void AddProperty(int id, string title, string location, string price, string rating, string badge, string imagePath, string status)
         {
             AntdUI.Panel card = new AntdUI.Panel { Size = new Size(320, 420), Radius = 12, BackColor = Color.White, Margin = new Padding(15), Shadow = 10, ShadowColor = Color.FromArgb(20, 0, 0, 0), Cursor = Cursors.Hand };
+
 
             card.Click += (s, e) => OpenDetailsPage(id);
 
@@ -319,6 +321,20 @@ namespace RentalSystemUI.Forms
             System.Windows.Forms.Label lblMonth = new System.Windows.Forms.Label { Text = " / month", Font = new Font("Segoe UI", 10), ForeColor = Color.Gray, AutoSize = true, Location = new Point(10 + lblPrice.PreferredWidth, 95) };
 
             pnlDetails.Controls.Add(lblMonth); pnlDetails.Controls.Add(lblPrice); pnlDetails.Controls.Add(lblLoc); pnlDetails.Controls.Add(lblRating); pnlDetails.Controls.Add(lblTitle);
+
+            if (status == "Rented")
+            {
+                AntdUI.Button btnBooked = new AntdUI.Button
+                {
+                    Text = "BOOKED",
+                    Type = TTypeMini.Error,
+                    Size = new Size(80, 26),
+                    Location = new Point(10, 10),
+                    Radius = 4,
+                    Cursor = Cursors.Arrow // Non-clickable look
+                };
+                pic.Controls.Add(btnBooked);
+            }
 
             AntdUI.Button btnView = new AntdUI.Button
             {

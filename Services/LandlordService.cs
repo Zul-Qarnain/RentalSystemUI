@@ -89,9 +89,27 @@ namespace RentalSystemUI.Services
             return _repo.GetReviewsByLandlord(landlordId);
         }
 
-        public void ReplyToReview(int reviewId, string reply)
+    public void ReplyToReview(int reviewId, string reply)
         {
             _repo.ReplyToReview(reviewId, reply);
+        }
+
+        // --- REFUNDS ---
+        public List<RefundRequestModel> GetRefundRequests(int landlordId)
+        {
+            return _repo.GetRefundRequests(landlordId);
+        }
+
+        public void ApproveRefund(int refundId)
+        {
+            _repo.ApproveRefund(refundId);
+            // Could add notification here
+        }
+
+        public void RejectRefund(int refundId)
+        {
+            _repo.RejectRefund(refundId);
+            // Could add notification here
         }
     }
 }

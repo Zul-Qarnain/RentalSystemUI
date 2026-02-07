@@ -12,6 +12,8 @@ CREATE TABLE USERS (
     Phone NVARCHAR(20),
     UserType NVARCHAR(20) CHECK (UserType IN ('Tenant', 'Landlord', 'SuperAdmin')),
     IsActive BIT DEFAULT 1,
+    IsPaid BIT DEFAULT 0,
+    NotificationEnabled BIT DEFAULT 1,
     CreatedAt DATETIME2 DEFAULT GETDATE()
 );
 

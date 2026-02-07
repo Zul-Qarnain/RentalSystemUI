@@ -13,6 +13,7 @@ using RentalSystemUI.Services;
 
 namespace RentalSystemUI.Forms
 {
+    // UI CLASS: Handles the Payment Form logic, including manual methods and SSLCommerz integration.
     public partial class Payment : Form
     {
         private readonly int? _bookingId;
@@ -71,6 +72,7 @@ namespace RentalSystemUI.Forms
             catch { }
         }
 
+        // EVENT HANDLER: Manual Payment (Bkash/Nagad) confirmation logic
         private void BtnConfirm_Click(object? sender, EventArgs e)
         {
             if (!_bookingId.HasValue)
@@ -216,6 +218,7 @@ namespace RentalSystemUI.Forms
             }
         }
 
+        // API INTEGRATION: Prepares data and calls the SSLCommerz API Gateway
         private async void InitSSLCommerz(object? sender, EventArgs e)
         {
             if (_amount <= 0) 
@@ -266,9 +269,11 @@ namespace RentalSystemUI.Forms
                 // Ensure TLS 1.2/1.3 is used (Fix for connection hangs)
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
 
+                // SECURE POST REQUEST: Sending the payment data dictionary to SSLCommerz
                 var response = await client.PostAsync(apiUrl, content);
                 var responseString = await response.Content.ReadAsStringAsync();
 
+                // JSON PARSING: Reading the response to extract the 'GatewayPageURL'
                 using var doc = JsonDocument.Parse(responseString);
                 
                 if (doc.RootElement.TryGetProperty("GatewayPageURL", out var urlElement) || 
@@ -285,6 +290,7 @@ namespace RentalSystemUI.Forms
                                 FileName = url,
                                 UseShellExecute = true
                             };
+                            // REDIRECT: Opening the user's browser to the payment page
                             Process.Start(psi);
                             AntdUI.Message.success(this, "Redirecting to Payment Gateway...");
                         }

@@ -369,9 +369,12 @@ namespace RentalSystemUI.Services
 
                     if (filter.OnlyAvailable)
                     {
-                        where.Add("p.Status = 'Available'");
-                        where.Add("p.AvailabilityStatus = 1");
+                        // Show all, but we will mark Rented in UI. 
+                        // If strict availability is needed we can re-enable, but for now user wants to see Booked properties.
+                        // where.Add("p.Status = 'Available'");
+                        // where.Add("p.AvailabilityStatus = 1");
                     }
+
 
                     if (!string.IsNullOrWhiteSpace(filter.SearchText))
                     {
