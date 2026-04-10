@@ -10,9 +10,22 @@ This project features a clean, flat architecture with role-based authentication 
 
 ---
 
-## 📸 Screenshots
+## 🎥 Project Demonstration
 
-<!-- Upload screenshots to your repo's 'Assets' folder and link them here -->
+Click the image below to watch the full video demonstration of the Rental Management System in action!
+
+[![Rental System UI Demo](https://img.youtube.com/vi/HIJnsWYAU9U/maxresdefault.jpg)](https://www.youtube.com/watch?v=HIJnsWYAU9U)
+
+---
+
+## 📚 Project Documentation
+
+For a detailed breakdown of the system architecture, features, and methodology, check out the official project report:  
+**[👉 View the Full Project Report Here](https://docs.google.com/document/d/1RLHymf69oI8pkkPEMiH5z1ez5_wfVrDeeSP5ldxhtD4/edit?usp=sharing)**
+
+---
+
+## 📸 Screenshots
 
 <p align="center">
   <img src="Assets/signin.png" alt="Login Screen" width="45%">
@@ -54,7 +67,7 @@ This project features a clean, flat architecture with role-based authentication 
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/RentalSystemUI.git
+git clone [https://github.com/Zul-Qarnain/RentalSystemUI.git](https://github.com/Zul-Qarnain/RentalSystemUI.git)
 cd RentalSystemUI
 ```
 
@@ -145,6 +158,8 @@ This project is licensed under the **MIT License** — see the `LICENSE` file.
 
 ---
 
-### 👨‍💻 Developed by
+### 👨‍💻 Development Team
 
-**Mohammad Shihab Hossain**
+* **Lead & Main Developer:** [Mohammad Shihab Hossain](https://github.com/Zul-Qarnain)
+* **Contributor:** [Sanjihan Jaman Shuchi](https://github.com/shuchi171)
+* **Contributor:** [MD.Naimul Haque Tashin](https://github.com/Tashin90)
